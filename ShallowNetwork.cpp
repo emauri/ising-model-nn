@@ -9,6 +9,12 @@ using namespace arma;
 
 //constructor
 ShallowNetwork::ShallowNetwork(uint32_t iN, uint32_t hN, uint32_t oN) : inputNeurons(iN), hiddenNeurons(hN), outputNeurons(oN) {
+
+  //initialize neurons to zero
+  input.zeros(iN);
+  hidden.zeros(hN);
+  output.zeros(oN);
+
   //initialize biases vectors
   initializeBiases();
   //initialize weights matrices
@@ -25,14 +31,20 @@ Col<uint32_t> ShallowNetwork::getStructure() const {
 //setters
 void ShallowNetwork::setInputNeurons(uint32_t inputNeurons) {
   this->inputNeurons = inputNeurons;
+  initializeWeights();
+  initializeBiases();
 }
 
 void ShallowNetwork::setHiddenNeurons(uint32_t hiddenNeurons) {
   this->hiddenNeurons = hiddenNeurons;
+  initializeWeights();
+  initializeBiases();
 }
 
 void ShallowNetwork::setOutputNeurons(uint32_t hiddenNeurons) {
   this->outputNeurons = outputNeurons;
+  initializeWeights();
+  initializeBiases();
 }
 
 void ShallowNetwork::setStructure(Col<uint32_t> & structure) {
@@ -43,6 +55,8 @@ void ShallowNetwork::setStructure(Col<uint32_t> & structure) {
   inputNeurons = structure(0);
   hiddenNeurons = structure(1);
   outputNeurons = structure(2);
+  initializeWeights();
+  initializeBiases();
 }
 */
 
@@ -149,8 +163,8 @@ void ShallowNetwork::feedForward(fvec & input) {
 
   //calculate output from hidden layer
   //----------------------------------------------------------------------------
-  output = weightInputHidden * input + hiddenBias;
-  activationFunction(output);
+  hidden = weightInputHidden * input + hiddenBias;
+  activationFunction(hidden);
 
   //calculate output
   //----------------------------------------------------------------------------

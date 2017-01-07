@@ -12,8 +12,11 @@ private:
   //Number of neurons in each layer
   uint32_t inputNeurons, hiddenNeurons, outputNeurons;
 
+  //Neurons layers as vectors
+  arma::fvec input, hidden, ouput;
+
   //Neurons biases stored as vectors for each layer
-  arma::fvec hiddenBias, outputBias, output;
+  arma::fvec hiddenBias, outputBias;
 
   //weight matrices within layers
   arma::fmat weightInputHidden, weightHiddenOutput;
@@ -28,7 +31,7 @@ public:
   //getters and setters
   arma::Col<uint32_t> getStructure() const;
 
-  //As of now, I am not going to allow setters, initialize the network with the right value using the constructor.
+  //As of now, I am not going to allow setters, initialize the network with the right values using the constructor.
   /*
   void setInputNeurons(uint32_t inputNeurons);
   void setHiddenNeurons(uint32_t hiddenNeurons);
@@ -43,7 +46,7 @@ public:
   //get the result of the network evaluation;
   uint32_t getResult(arma::fvec & input);
 
-  //to be inplemented later
+  //to be implemented later
   //----------------------------------------------------------------------------
   //training evaluation
   //double getAccuracy();
