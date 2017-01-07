@@ -11,7 +11,6 @@ using namespace arma;
 ShallowNetwork::ShallowNetwork(uint32_t iN, uint32_t hN, uint32_t oN) : inputNeurons(iN), hiddenNeurons(hN), outputNeurons(oN) {
 
   //initialize neurons to zero
-  input.zeros(iN);
   hidden.zeros(hN);
   output.zeros(oN);
 
@@ -180,4 +179,20 @@ uint32_t ShallowNetwork::getResult(fvec & input) {
 
   //return the index of the neuron with the highest output value
   return index_max(output);
+}
+
+//accuracy on an input set
+float ShallowNetwork::getAccuracyOfSet(field< field<fvec> > * set) {
+  float incorrectResults = 0;
+
+  //compare result of each input with corresponding label
+  uint32_t size = set->n_elem;
+  for (uint32_t i = 0; i < set->n_elem; ++i) {
+    if (getResult(set->at(i)(0)) != set->at(i)(1).index_max()) {
+       ++incorrectResults;
+    }
+  }
+
+  //return percentage of correct results
+  return 100 - (incorrectResults/size * 100);
 }

@@ -13,7 +13,7 @@ private:
   uint32_t inputNeurons, hiddenNeurons, outputNeurons;
 
   //Neurons layers as vectors
-  arma::fvec input, hidden, ouput;
+  arma::fvec hidden, output;
 
   //Neurons biases stored as vectors for each layer
   arma::fvec hiddenBias, outputBias;
@@ -46,11 +46,8 @@ public:
   //get the result of the network evaluation;
   uint32_t getResult(arma::fvec & input);
 
-  //to be implemented later
-  //----------------------------------------------------------------------------
   //training evaluation
-  //double getAccuracy();
-  //----------------------------------------------------------------------------
+  float getAccuracyOfSet(arma::field< arma::field<arma::fvec> > * set);
 
   //private methods
   //----------------------------------------------------------------------------
