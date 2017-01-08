@@ -43,8 +43,6 @@ void IsingDataLoader::setData(field<fvec> & data, const char * filename) {
 
 void IsingDataLoader::loadData(uint32_t numberOfFiles, const char * fileNames[]) {
   set.set_size(numberOfFiles);
-  std::cout << set.n_elem << '\n';
-  std::cout << numberOfFiles << '\n';
   for(uint32_t i = 0; i < numberOfFiles; ++i) {
     setData(set(i), fileNames[i]);
   }

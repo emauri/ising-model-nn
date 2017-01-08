@@ -3,6 +3,9 @@
 #define SHALLOWNETWORK_H
 #include<armadillo>
 
+//friend class
+class NetworkTrainer;
+
 class ShallowNetwork {
 
   //Class members
@@ -18,10 +21,10 @@ private:
   //Neurons biases stored as vectors for each layer
   arma::fvec hiddenBias, outputBias;
 
-  //weight matrices within layers
+  //Weight matrices within layers
   arma::fmat weightInputHidden, weightHiddenOutput;
 
-  //public Methods
+  //Public Methods
   //----------------------------------------------------------------------------
 public:
 
@@ -49,7 +52,11 @@ public:
   //training evaluation
   float getAccuracyOfSet(arma::field< arma::field<arma::fvec> > * set);
 
-  //private methods
+  //Friends
+	//--------------------------------------------------------------------------------------------
+	friend NetworkTrainer;
+
+  //Private methods
   //----------------------------------------------------------------------------
 private:
 
