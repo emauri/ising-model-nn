@@ -2,6 +2,7 @@
 #ifndef ISINGDATALOADER_H
 #define ISINGDATALOADER_H
 #include<armadillo>
+#include<string>
 
 class IsingDataLoader {
 
@@ -19,7 +20,7 @@ private:
 public:
 
   //Load the data set.
-  void loadData(uint32_t numberOfFiles, const char * filenames[]);
+  void loadData(uint32_t numberOfFiles, const char * listFile);
 
   //Getter for the data set. Return a pointer to the loaded dat set.
   arma::field< arma::field<arma::fvec> > * getDataSet();
@@ -31,7 +32,9 @@ public:
 private:
 
   //initialize one element of the set with input data and output label
-  void setData(arma::field<arma::fvec> & data, const char * filename);
+  void setData(arma::field<arma::fvec> & data, std::string & filename);
+  //estract list data files name from a text file
+  void readListFile(std::string & listFile);
 
 };
 

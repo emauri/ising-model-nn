@@ -13,7 +13,7 @@ field< field<fvec> > * IsingDataLoader::getDataSet() {
 
 //Read data from one file and initialize one elemnt of set, i.e. it initializes
 //two vectors, one with the input configuration and one with the corresponding ouput label.
-void IsingDataLoader::setData(field<fvec> & data, const char * filename) {
+void IsingDataLoader::setData(field<fvec> & data, std::string & filename) {
 
   //set data size to 2 (input configuration, output label)
   data.set_size(2);
@@ -41,9 +41,34 @@ void IsingDataLoader::setData(field<fvec> & data, const char * filename) {
   data(0) = fileData;
 }
 
-void IsingDataLoader::loadData(uint32_t numberOfFiles, const char * fileNames[]) {
+void IsingDataLoader::loadData(uint32_t numberOfFiles, const char * listFile) {
   set.set_size(numberOfFiles);
-  for(uint32_t i = 0; i < numberOfFiles; ++i) {
-    setData(set(i), fileNames[i]);
+
+  //check if all files are loaded
+  bool allLoaded = true;
+
+  //read data files names from file
+  std::ifstream myfile (listFile);
+  std::string filename;
+  if (myfile.is_open()) {
+    for(uint32_t i = 0; i < numberOfFiles; ++i) {
+      if (std::getline(myfile, filename)) {
+        setData(set(i), filename);
+      }
+      else {
+        allLoaded = false;
+      }
+    }
+    myfile.close();
   }
+  else {
+    std::cout << "Couldn't open the file." << std::endl;
+  }
+
+  if (allLoaded) {
+    std::cout << "Set properly loaded." << std::endl;
+  } else {
+    std::cout << "Unable to properly load the data set." << std::endl;
+  }
+
 }
