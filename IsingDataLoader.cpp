@@ -63,6 +63,7 @@ void IsingDataLoader::loadData(uint32_t numberOfFiles, const char * listFile) {
   }
   else {
     std::cout << "Couldn't open the file." << std::endl;
+    allLoaded = false;
   }
 
   if (allLoaded) {
@@ -71,4 +72,19 @@ void IsingDataLoader::loadData(uint32_t numberOfFiles, const char * listFile) {
     std::cout << "Unable to properly load the data set." << std::endl;
   }
 
+}
+
+bool IsingDataLoader::saveDataSet(const char * fileName) {
+  return set.save(fileName);
+}
+
+//data loader for previously saved set
+void IsingDataLoader::loadData(const char * fileName) {
+  bool loaded = set.load(fileName);
+  if (loaded) {
+    std::cout << "Set properly loaded." << std::endl;
+  }
+  else {
+    std::cout << "Unable to load the data set." << std::endl;
+  }
 }

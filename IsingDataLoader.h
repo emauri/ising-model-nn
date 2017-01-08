@@ -22,10 +22,13 @@ public:
   //Load the data set.
   void loadData(uint32_t numberOfFiles, const char * listFile);
 
-  //Getter for the data set. Return a pointer to the loaded dat set.
+  //load saved data set
+  void loadData(const char * fileName);
+
+  //Getter for the data set. Return a pointer to the loaded dat set
   arma::field< arma::field<arma::fvec> > * getDataSet();
 
-
+  bool saveDataSet(const char * fileName);
 
   //Private methods
   //----------------------------------------------------------------------------

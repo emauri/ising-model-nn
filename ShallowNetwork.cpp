@@ -167,7 +167,7 @@ void ShallowNetwork::feedForward(fvec & input) {
 
   //calculate output
   //----------------------------------------------------------------------------
-  output = weightHiddenOutput * output + outputBias;
+  output = weightHiddenOutput * hidden + outputBias;
   activationFunction(output);
 }
 
@@ -194,5 +194,5 @@ float ShallowNetwork::getAccuracyOfSet(field< field<fvec> > * set) {
   }
 
   //return percentage of correct results
-  return 100 - (incorrectResults/size * 100);
+  return 100 - (incorrectResults / size * 100);
 }

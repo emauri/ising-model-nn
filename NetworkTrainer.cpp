@@ -10,7 +10,7 @@ using namespace arma;
 NetworkTrainer::NetworkTrainer(ShallowNetwork * network, float lR, uint32_t nOE, uint32_t bS, bool uV) : network(network), learningRate(lR), numberOfEpochs(nOE), batchSize(bS), useValidation(uV) {
 
   //initialize deltaBias vectors
-  deltaHiddenBias.zeros(network->inputNeurons);
+  deltaHiddenBias.zeros(network->hiddenNeurons);
 
   deltaOutputBias.zeros(network->outputNeurons);
 
@@ -48,23 +48,20 @@ void NetworkTrainer::backpropagation(fvec & input, fvec & label) {
   //feed forward
   network->feedForward(input);
 
-  //compute error in the output
   fvec delta = getOutputError(network->output, label);
-
-  //add error in the output biases
   deltaOutputBias += delta;
 
   //compute error in the hidden-output weights
-  deltaWeightHiddenOutput += dot(delta, network->hidden.t());
+  deltaWeightHiddenOutput += (delta * network->hidden.t() );
 
   //compute error of the hidden layers
-  delta = dot(network->weightHiddenOutput.t(), delta) * (network->hidden) * (1 - network->hidden); //using sigmoid activation function
+  delta = (network->weightHiddenOutput.t() *  delta) % ( (network->hidden) % (1 - network->hidden) ); //using sigmoid activation function
 
   //add error in the hidden biases
   deltaHiddenBias += delta;
 
   //compute error in the input-hidden weights
-  deltaWeightInputHidden += dot(delta, input.t());
+  deltaWeightInputHidden += (delta * input.t());
 }
 
 //update network weights and biases
@@ -84,9 +81,8 @@ void NetworkTrainer::updateNetwork(field< field<fvec> > * trainingSet, uint32_t 
 
     //backpropagation
     backpropagation(trainingSet->at(shuffleData(i))(0), trainingSet->at(shuffleData(i))(1));
-
     //check output against label
-    if (network->getResult(network->output) != trainingSet->at(shuffleData(i))(1).index_max()) {
+    if (network->output.index_max() != trainingSet->at(shuffleData(i))(1).index_max()) {
       ++incorrectResults;
     }
   }
@@ -138,13 +134,14 @@ void NetworkTrainer::trainNetwork(field< field <fvec> > * trainingSet, field < f
 
     if (useValidation && validationSet != NULL) {
       validationAccuracy(i) = network->getAccuracyOfSet(validationSet);
+
       validationCost(i) = monitorCost(validationSet);
     }
 
     //print accuracy for the epoch
     std::cout << "==========================================================================" << std::endl
-    << "Epoch: " << i << " of " << numberOfEpochs << std::endl
-    << " Training set accuracy: " << trainingAccuracy(i) << std::endl;
+    << "Epoch: " << i + 1 << " of " << numberOfEpochs << std::endl
+    << "Training set accuracy: " << trainingAccuracy(i) << std::endl;
     if (useValidation && validationSet != NULL) {
       std::cout << "Validation set accuracy: " << validationAccuracy(i) << " Total cost: " << validationCost(i) << std::endl;
     }
@@ -156,11 +153,7 @@ void NetworkTrainer::trainNetwork(field< field <fvec> > * trainingSet, field < f
 //define cross-entropy cost function
 float NetworkTrainer::crossEntropy(fvec & output, fvec & label) {
 
-  //define vector of ones with size as output
-  fvec ones;
-  ones.ones(output.n_elem);
-
-  return accu(-label * log(output) + (label - ones) * log(ones - output));
+  return accu(-label % log(output) + (label - 1) % log(1 - output));
 }
 
 float NetworkTrainer::monitorCost(field< field<fvec> > * set) {
