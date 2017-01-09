@@ -26,9 +26,9 @@ void IsingDataLoader::setData(field<fvec> & data, std::string & filename) {
 
   //Set the output label
   //----------------------------------------------------------------------------
-  //If the temperature is less than 2.69 it is below the critical temperature: ouput = {0,1},
+  //If the temperature is less than 2.269 it is below the critical temperature: ouput = {0,1},
   //otherwise it is above: output = {1,0}
-  if (fileData(1) < 2.69) {
+  if (fileData(1) < 2.269) {
     data(1) = {0,1};
   } else {
     data(1) = {1,0};
@@ -58,6 +58,10 @@ void IsingDataLoader::loadData(uint32_t numberOfFiles, const char * listFile) {
       else {
         allLoaded = false;
       }
+    }
+    if (std::getline(myfile, filename)) {
+      std::cout << "Warning: loaded less configurations than available." << std::endl;
+      allLoaded = false;
     }
     myfile.close();
   }
