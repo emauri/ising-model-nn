@@ -1,0 +1,25 @@
+# .gitignore
+
+# Ignore all
+*
+
+# Unignore all with extension cpp 
+!*.cpp
+
+#Unignore all file with extension h
+!*.h
+
+# Unignore readme
+!*.md
+
+# Unignore makefile
+!makefile
+
+#Unignore .gitignore
+!.gitignore
+
+#Ignore test files
+test*
+
+#Ignore wolff.cpp
+wolff.cpp

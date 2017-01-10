@@ -80,7 +80,7 @@ void ShallowNetwork::initializeWeights() {
   //----------------------------------------------------------------------------
 
   //standard deviation of the Gaussian distribution
-  float stdDev = 1 / (float) sqrt(inputNeurons);
+  float stdDev = 1.0 / (float)sqrt(inputNeurons);
 
   //initialize the weights and rescale them
   weightInputHidden.randn(hiddenNeurons, inputNeurons);
@@ -153,8 +153,9 @@ bool ShallowNetwork::loadNetwork(const char * directoryName) {
 
 //Activation function
 void ShallowNetwork::activationFunction(fvec & input) {
+  
   //sigmoid function
-  input = 1.0 / (1 + exp(-input));
+  input = 1.0 / (1.0 + exp(-input));
 }
 
 //Feed Forward procedure
