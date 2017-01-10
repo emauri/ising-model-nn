@@ -3,8 +3,7 @@ CC = g++ --std=c++11
 OPTIMIZE = -O3
 CFLAGS = -Wall -c $(OPTIMIZE)
 LFLAGS = -Wall $(OPTIMIZE)
-LIBS = -larmadillo -framework Accelerate
-
+LIBS = -larmadillo -I/opt/OpenBLAS/include/ -L/opt/OpenBLAS/lib -lopenblas -llapack
 main : $(OBJS)
 		$(CC) $(LFLAGS) $(OBJS) -o main $(LIBS)
 

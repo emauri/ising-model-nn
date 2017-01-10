@@ -7,7 +7,7 @@
 using namespace arma;
 
 //constructor
-NetworkTrainer::NetworkTrainer(ShallowNetwork * network, float lR, uint32_t nOE, uint32_t bS, bool uV) : network(network), learningRate(lR), numberOfEpochs(nOE), batchSize(bS), useValidation(uV) {
+NetworkTrainer::NetworkTrainer(ShallowNetwork * network, float lR, uint32_t nOE, uint32_t bS, float r, bool uV) : network(network), learningRate(lR), numberOfEpochs(nOE), batchSize(bS), regularizer(r), useValidation(uV) {
 
   //initialize deltaBias vectors
   deltaHiddenBias.zeros(network->hiddenNeurons);
@@ -28,10 +28,11 @@ NetworkTrainer::NetworkTrainer(ShallowNetwork * network, float lR, uint32_t nOE,
 }
 
 //setters
-void NetworkTrainer::setTrainingParameters(float learningRate, uint32_t numberOfEpochs, uint32_t batchSize, bool useValidation) {
+void NetworkTrainer::setTrainingParameters(float learningRate, uint32_t numberOfEpochs, uint32_t batchSize, float regularizer, bool useValidation) {
   this->learningRate = learningRate;
   this->numberOfEpochs = numberOfEpochs;
   this->batchSize = batchSize;
+  this->regularizer = regularizer;
   this->useValidation = useValidation;
 }
 
@@ -89,10 +90,11 @@ void NetworkTrainer::updateNetwork(field< field<fvec> > * trainingSet, uint32_t 
 
   //update weights
   float prefactor = learningRate / batchSize;
+  float regularizationTerm = (1 - learningRate * regularizer / size);
 
-  network->weightInputHidden -= prefactor * deltaWeightInputHidden;
+  network->weightInputHidden = regularizationTerm * ( network->weightInputHidden ) - prefactor * deltaWeightInputHidden;
 
-  network->weightHiddenOutput -= prefactor * deltaWeightHiddenOutput;
+  network->weightHiddenOutput = regularizationTerm * ( network->weightHiddenOutput ) - prefactor * deltaWeightHiddenOutput;
 
   //update biases
   network->hiddenBias -= prefactor * deltaHiddenBias;
@@ -125,6 +127,11 @@ void NetworkTrainer::trainNetwork(field< field <fvec> > * trainingSet, field < f
   for (uint32_t i = 0; i < trainingSize; ++i) {
     shuffleData(i) = i;
   }
+  std::cout	<< std::endl << " Neural network ready to start training: " << std::endl
+			<< "==========================================================================" << std::endl
+			<< " LR: " << learningRate << ", Number of Epochs: " << numberOfEpochs << ", Batch size: " << batchSize << std::endl
+			<< " " << network->inputNeurons << " Input Neurons, " << network->hiddenNeurons << " Hidden Neurons, " << network->outputNeurons << " Output Neurons" << std::endl
+			<< "==========================================================================" << std::endl << std::endl;
   //loop over the number of epochs
   for (uint32_t i = 0; i < numberOfEpochs; ++i) {
     stochasticGradientDescent(trainingSet, trainingSize);

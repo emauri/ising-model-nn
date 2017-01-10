@@ -24,6 +24,8 @@ private:
   float learningRate;
   uint32_t numberOfEpochs;
   uint32_t batchSize;
+  float regularizer;
+
   //bool monitorTrainingCost;
   bool useValidation;
 
@@ -42,10 +44,10 @@ private:
 public:
 
   //constructor with default values
-  NetworkTrainer(ShallowNetwork * network, float learningRate = 0.01, uint32_t numberOfEpochs = 30, uint32_t miniBatchSize = 10, bool useValidation = false);
+  NetworkTrainer(ShallowNetwork * network, float learningRate = 0.01, uint32_t numberOfEpochs = 30, uint32_t miniBatchSize = 10, float regularizer = 0.0, bool useValidation = false);
 
   //setters
-  void setTrainingParameters(float learningRate, uint32_t numberOfEpochs, uint32_t batchSize, bool useValidation = false);
+  void setTrainingParameters(float learningRate, uint32_t numberOfEpochs, uint32_t batchSize, float regularizer = 0.0, bool useValidation = false);
 
   //getters for monitorig vector
   arma::fvec getTrainingAccuracy() const;

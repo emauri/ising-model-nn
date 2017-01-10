@@ -41,7 +41,7 @@ void IsingDataLoader::setData(field<fvec> & data, std::string & filename) {
   data(0) = fileData;
 }
 
-void IsingDataLoader::loadData(uint32_t numberOfFiles, const char * listFile) {
+bool IsingDataLoader::loadData(uint32_t numberOfFiles, const char * listFile) {
   set.set_size(numberOfFiles);
 
   //check if all files are loaded
@@ -75,7 +75,7 @@ void IsingDataLoader::loadData(uint32_t numberOfFiles, const char * listFile) {
   } else {
     std::cout << "Unable to properly load the data set." << std::endl;
   }
-
+  return allLoaded;
 }
 
 bool IsingDataLoader::saveDataSet(const char * fileName) {
@@ -83,7 +83,7 @@ bool IsingDataLoader::saveDataSet(const char * fileName) {
 }
 
 //data loader for previously saved set
-void IsingDataLoader::loadData(const char * fileName) {
+bool IsingDataLoader::loadData(const char * fileName) {
   bool loaded = set.load(fileName);
   if (loaded) {
     std::cout << "Set properly loaded." << std::endl;
@@ -91,4 +91,5 @@ void IsingDataLoader::loadData(const char * fileName) {
   else {
     std::cout << "Unable to load the data set." << std::endl;
   }
+  return loaded;
 }
