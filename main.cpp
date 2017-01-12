@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdint.h>
 
 #include "NetworkTrainer.h"
 #include "IsingDataLoader.h"
