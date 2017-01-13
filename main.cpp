@@ -44,44 +44,45 @@ void IsingParallelNN()
      ********************************************************************/
     unsigned int pid = bsp_pid();
 
-    // Number of neurons in each layer
-    uint32_t inputNeurons, hiddenNeurons, outputNeurons;
-    // Neurons layers as vectors
-    arma::fvec hidden, output;
-    // Neurons biases stored as vectors for each layer
-    arma::fvec hiddenBias, outputBias;
-    // Weight matrices within layers
-    arma::fmat weightInputHidden, weightHiddenOutput;
+    // Load seperate data sets on each core
+    //----------------------------------------------------------------------------
+    IsingDataLoader training;
+    IsingDataLoader validation;
+    IsingDataLoader test;
 
-    // vectors storing changes in biases during gradient descent
-    arma::fvec deltaHiddenBias, deltaOutputBias;
-    // matrices storing cahnges in weights during gradient descent
-    arma::fmat deltaWeightInputHidden, deltaWeightHiddenOutput;
-    // learning parameters
-    float learningRate;
-    uint32_t numberOfEpochs;
-    uint32_t batchSize;
-    // bool monitorTrainingCost;
-    bool useValidation;
-    // monitor progress during learning
-    float incorrectResults = 0;
+    test.loadData(70, "dataList/testData.txt");
+    training.loadData(330, "dataList/trainingData.txt");
+    validation.loadData(50, "dataList/validationData.txt");
 
-    arma::fvec trainingAccuracy;
-    arma::fvec validationAccuracy;
-    arma::fvec validationCost;
+    // Initialize network and trainer on each core
+    //----------------------------------------------------------------------------
 
-    // store shuffled indeces to access data in random order
-    arma::Col<uint32_t> shuffleData;
+    ShallowNetwork network(2500, 100, 2);
 
+    NetworkTrainer trainer(&network, 0.01, 5, 100, true);
+
+    // train the network on each core
+    //----------------------------------------------------------------------------
+    trainer.trainNetwork(training.getDataSet(), validation.getDataSet());
+
+    // test network accuracy on dataset
+    //----------------------------------------------------------------------------
+    bsp_sync();
+
+    if(pid == pid) {
+        std::cout << "This is core " << pid << std::endl
+                  << "Test data accuracy: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
+    }
+
+    // Send weights and biases to 
     // Register into stack
     /*    bsp_push_reg(query_rep, n_queries * SIZEUI);
-        bsp_push_reg(Query_rep, n_queries * n_cores * SIZEUI);
-        bsp_sync();*/
+            bsp_push_reg(Query_rep, n_queries * n_cores * SIZEUI);
+            bsp_sync();*/
 
     bsp_sync();
     bsp_end();
 }
-
 
 /********************************************************************
  * MAIN Function:
@@ -93,22 +94,25 @@ int main(int argc, char* argv[])
     bsp_init(IsingParallelNN, argc, argv);
 
     n_cores = bsp_nprocs();
-    // load data sets
-    //----------------------------------------------------------------------------
-    IsingDataLoader training;
-    IsingDataLoader validation;
-    IsingDataLoader test;
-
-    test.loadData(4970, "dataList/testData.txt");
-    training.loadData(33000, "dataList/trainingData.txt");
-    validation.loadData(5000, "dataList/validationData.txt");
-
-    // initialize network and trainer
-    //----------------------------------------------------------------------------
-
-    ShallowNetwork network(2500, 100, 2);
-
-    NetworkTrainer trainer(&network, 0.01, 20, 100, true);
+    //    // load data sets
+    //    //----------------------------------------------------------------------------
+    //    IsingDataLoader training;
+    //    IsingDataLoader validation;
+    //    IsingDataLoader test;
+    //
+    //    test.loadData(50, "dataList/testData.txt");
+    //    training.loadData(330, "dataList/trainingData.txt");
+    //    validation.loadData(50, "dataList/validationData.txt");
+    //
+    //    // initialize network and trainer
+    //    //----------------------------------------------------------------------------
+    //
+    //    ShallowNetwork network(2500, 100, 2);
+    //
+    //    NetworkTrainer trainer(&network, 0.01, 5, 100, true);
+    //    trainer.trainNetwork(training.getDataSet(), validation.getDataSet());
+    //
+    //    std::cout << "Test data accuracy: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
     IsingParallelNN();
 
     return 0;
