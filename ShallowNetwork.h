@@ -46,7 +46,7 @@ public:
   bool saveNetwork(const char * directoryName = ".");
   bool loadNetwork(const char * directoryName = ".");
 
-  //get the result of the network evaluation;
+  //get the result of the network evaluation: feedforward input -> return the index of the neuron with the highest output value;
   uint32_t getResult(arma::fvec & input);
 
   //training evaluation

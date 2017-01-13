@@ -1,4 +1,4 @@
-//Implementation for the ShallowNetwork class
+//Implementation for the ShallowNetwork class: We have ONE hidden layer
 #include<iostream>
 #include <fstream>
 #include <math.h>
@@ -48,7 +48,7 @@ void ShallowNetwork::setOutputNeurons(uint32_t hiddenNeurons) {
 
 void ShallowNetwork::setStructure(Col<uint32_t> & structure) {
   if (size(structure) != 3) {
-    std::cout << "Wrong vector lenght. The vector should have lenght 3." << std::endl;
+    std::cout << "Wrong vector length. The vector should have length 3." << std::endl;
     return;
   }
   inputNeurons = structure(0);
@@ -62,6 +62,7 @@ void ShallowNetwork::setStructure(Col<uint32_t> & structure) {
 //biases initializer
 void ShallowNetwork::initializeBiases() {
 
+  //CAUTION, random value must scale as sqrt(N)
   //set the seed to a random value
   arma_rng::set_seed_random();
 
@@ -79,6 +80,7 @@ void ShallowNetwork::initializeWeights() {
   //set weights between input and hidden layers
   //----------------------------------------------------------------------------
 
+  //CAUTION, random value must scale as sqrt(N)
   //standard deviation of the Gaussian distribution
   float stdDev = 1.0 / (float)sqrt(inputNeurons);
 
@@ -88,7 +90,7 @@ void ShallowNetwork::initializeWeights() {
 
   //set weights between hidden and output layers
   //----------------------------------------------------------------------------
-
+  //CAUTION, random value must scale as sqrt(N)
   //standard deviation of the Gaussian
   stdDev = 1 / (float) sqrt(hiddenNeurons);
 
@@ -154,6 +156,7 @@ bool ShallowNetwork::loadNetwork(const char * directoryName) {
 //Activation function
 void ShallowNetwork::activationFunction(fvec & input) {
   
+  //may use TANH function or linear?
   //sigmoid function
   input = 1.0 / (1.0 + exp(-input));
 }

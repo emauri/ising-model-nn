@@ -36,7 +36,7 @@ private:
 
   //initialize one element of the set with input data and output label
   void setData(arma::field<arma::fvec> & data, std::string & filename);
-  //estract list data files name from a text file
+  //extract list data files name from a text file
   void readListFile(std::string & listFile);
 
 };

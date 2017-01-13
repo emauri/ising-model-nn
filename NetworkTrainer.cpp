@@ -55,6 +55,7 @@ void NetworkTrainer::backpropagation(fvec & input, fvec & label) {
   deltaWeightHiddenOutput += (delta * network->hidden.t() );
 
   //compute error of the hidden layers
+  //the % operator is element wise from Armadillo
   delta = (network->weightHiddenOutput.t() *  delta) % ( (network->hidden) % (1 - network->hidden) ); //using sigmoid activation function
 
   //add error in the hidden biases

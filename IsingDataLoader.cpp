@@ -11,7 +11,7 @@ field< field<fvec> > * IsingDataLoader::getDataSet() {
   return &(set);
 }
 
-//Read data from one file and initialize one elemnt of set, i.e. it initializes
+//Read data from one file and initialize one element of set, i.e. it initializes
 //two vectors, one with the input configuration and one with the corresponding ouput label.
 void IsingDataLoader::setData(field<fvec> & data, std::string & filename) {
 
@@ -83,6 +83,7 @@ bool IsingDataLoader::saveDataSet(const char * fileName) {
 }
 
 //data loader for previously saved set
+//CAUTION FOR SHIFTING
 void IsingDataLoader::loadData(const char * fileName) {
   bool loaded = set.load(fileName);
   if (loaded) {
