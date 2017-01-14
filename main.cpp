@@ -40,7 +40,7 @@ using namespace arma;
 #define OUTPUTNEURONS 2
 
 #define LEARNINGRATE 0.01
-#define NUMEPOCH 3
+#define NUMEPOCH 20
 #define BATCHSIZE 100
 #define USEVALIDATION true
 
@@ -112,12 +112,49 @@ void IsingParallelNN()
 
     // TRAIN NETWORK ON EACH CORE
     //----------------------------------------------------------------------------
+    for(uint32_t i = 0; i < NUMEPOCH; i++) {
+        NetworkTrainer trainer(&network, LEARNINGRATE, 1, BATCHSIZE, USEVALIDATION);
 
-    NetworkTrainer trainer(&network, LEARNINGRATE, NUMEPOCH, BATCHSIZE, USEVALIDATION);
+        trainer.trainNetwork(i, NUMEPOCH, training.getDataSet(), validation.getDataSet());
 
-    // TRAIN THE NETWORK ON EACH CORE
-    //----------------------------------------------------------------------------
-    trainer.trainNetwork(training.getDataSet(), validation.getDataSet());
+        // COMMUNICATE WEIGHTS AND BIASES TO EVERY CORES AFTER EVERY EPOCH
+
+        // VARIABLE TO STORE WEIGHT AND BIASES FROM OTHER CORES
+        double* otherWeightInputHidden = new double[HIDDENNEURONS * INPUTNEURONS];
+        double* otherWeightHiddenOutput = new double[OUTPUTNEURONS * HIDDENNEURONS];
+        double* otherHiddenBias = new double[OUTPUTNEURONS * HIDDENNEURONS];
+        double* otherOutputBias = new double[OUTPUTNEURONS * HIDDENNEURONS];
+
+        // GET WEIGHT AND BIASES FROM EACH CORE, SAVE TO POINTER other(...)
+        for(uint32_t j = 0; j < n_cores; j++) {
+            if(pid != j) {
+                bsp_get(j, localWeightInputHidden, 0, otherWeightInputHidden, HIDDENNEURONS * INPUTNEURONS * SIZED);
+                bsp_get(j, localWeightHiddenOutput, 0, otherWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZED);
+                bsp_get(j, localHiddenBias, 0, otherHiddenBias, HIDDENNEURONS * SIZED);
+                bsp_get(j, localOutputBias, 0, otherOutputBias, OUTPUTNEURONS * SIZED);
+
+                // CONVERT FROM ARRAY POINTER BACK TO VEC AND MAT TYPE
+                arma::mat OtherWeightInputHidden(otherWeightInputHidden, HIDDENNEURONS, INPUTNEURONS);
+                arma::mat OtherWeightHiddenOutput(otherWeightHiddenOutput, OUTPUTNEURONS, HIDDENNEURONS);
+                arma::vec OtherHiddenBias(otherHiddenBias, HIDDENNEURONS);
+                arma::vec OtherOutputBias(otherOutputBias, OUTPUTNEURONS);
+
+                // SET WEIGHTS AND BIASES ON EACH CORE TO THE SAME VALUE AS ONES ON PROCESSOR 0
+                network.weightInputHidden += OtherWeightInputHidden;
+                network.weightHiddenOutput += OtherWeightHiddenOutput;
+                network.hiddenBias += OtherHiddenBias;
+                network.outputBias += OtherOutputBias;
+
+                bsp_sync();
+            }
+        }
+
+        // TAKE AVERAGE
+        network.weightInputHidden = network.weightInputHidden / n_cores;
+        network.weightHiddenOutput = network.weightHiddenOutput / n_cores;
+        network.hiddenBias = network.hiddenBias / n_cores;
+        network.outputBias = network.outputBias / n_cores;
+    }
 
     // TEST NETWORK ACCURACY ON DATASET
     //----------------------------------------------------------------------------
@@ -129,8 +166,6 @@ void IsingParallelNN()
                   << "Test data accuracy after training: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
         bsp_sync();
     }
-
-    // SEND WEIGHTS AND BIASES TO PROCESSOR 0
 
     bsp_sync();
     bsp_end();

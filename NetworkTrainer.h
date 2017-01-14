@@ -58,7 +58,9 @@ public:
     arma::vec getValidationCost() const;
 
     // network trainer
-    void trainNetwork(arma::field<arma::field<arma::vec> >* trainingSet,
+    void trainNetwork(uint32_t currentEpoch,
+        uint32_t totalEpochs,
+        arma::field<arma::field<arma::vec> >* trainingSet,
         arma::field<arma::field<arma::vec> >* validationSet = NULL);
 
     // private Methods
