@@ -1,0 +1,98 @@
+Set properly loaded.
+Set properly loaded.
+Set properly loaded.
+Set properly loaded.
+Warning: loaded less configurations than available.
+Unable to properly load the data set.
+Warning: loaded less configurations than available.
+Unable to properly load the data set.
+Warning: loaded less configurations than available.
+Unable to properly load the data set.
+Warning: loaded less configurations than available.
+Unable to properly load the data set.
+Warning: loaded less configurations than available.
+Unable to properly load the data set.
+Warning: loaded less configurations than available.
+Unable to properly load the data set.
+Warning: loaded less configurations than available.
+Unable to properly load the data set.
+Warning: loaded less configurations than available.
+Unable to properly load the data set.
+This is core 0
+Test data accuracy before training: 50
+This is core 3
+Test data accuracy before training: 50
+This is core 2
+Test data accuracy before training: 50
+This is core 1
+Test data accuracy before training: 50
+==========================================================================
+Epoch: 1 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.843215
+==========================================================================
+==========================================================================
+Epoch: 1 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.913191
+==========================================================================
+==========================================================================
+Epoch: 1 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.843218
+==========================================================================
+==========================================================================
+Epoch: 1 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.913198
+==========================================================================
+==========================================================================
+Epoch: 2 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.445115
+==========================================================================
+==========================================================================
+Epoch: 2 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.481992
+==========================================================================
+==========================================================================
+Epoch: 2 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.445123
+==========================================================================
+==========================================================================
+Epoch: 2 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.481989
+==========================================================================
+==========================================================================
+Epoch: 3 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.302245
+==========================================================================
+==========================================================================
+Epoch: 3 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.327259
+==========================================================================
+==========================================================================
+Epoch: 3 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.302255
+==========================================================================
+==========================================================================
+Epoch: 3 of 3
+Training set accuracy: 100
+Validation set accuracy: 100 Total cost: 0.327255
+==========================================================================
+This is core 0
+Test data accuracy after training: 50
+This is core 3
+Test data accuracy after training: 50
+This is core 2
+Test data accuracy after training: 50
+This is core 1
+Test data accuracy after training: 50
+Press ENTER to continue...
+

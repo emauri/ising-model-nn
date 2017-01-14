@@ -1,44 +1,41 @@
-//Header for a simple IsingDataLoader class, to be improved later
+// Header for a simple IsingDataLoader class, to be improved later
 #ifndef ISINGDATALOADER_H
 #define ISINGDATALOADER_H
-#include<armadillo>
-#include<string>
+#include <armadillo>
+#include <string>
 
-class IsingDataLoader {
+class IsingDataLoader
+{
 
-  //Class members
-  //----------------------------------------------------------------------------
+    // Class members
+    //----------------------------------------------------------------------------
 private:
+    // data structure to load the data, is a field of field of vectors. Each field
+    // represent one training data, each containing a input configuration and a
+    // output label.
+    arma::field<arma::field<arma::vec> > set;
 
-  //data structure to load the data, is a field of field of vectors. Each field
-  //represent one training data, each containing a input configuration and a
-  //output label.
-  arma::field< arma::field<arma::fvec> > set;
-
-  //Public methods
-  //----------------------------------------------------------------------------
+    // Public methods
+    //----------------------------------------------------------------------------
 public:
+    // Load the data set.
+    void loadData(uint32_t numberOfFiles, uint32_t CurrentCore, uint32_t TotalCore, const char* listFile);
 
-  //Load the data set.
-  void loadData(uint32_t numberOfFiles, const char * listFile);
+    // load saved data set
+    void loadData(const char* fileName);
 
-  //load saved data set
-  void loadData(const char * fileName);
+    // Getter for the data set. Return a pointer to the loaded dat set
+    arma::field<arma::field<arma::vec> >* getDataSet();
 
-  //Getter for the data set. Return a pointer to the loaded dat set
-  arma::field< arma::field<arma::fvec> > * getDataSet();
+    bool saveDataSet(const char* fileName);
 
-  bool saveDataSet(const char * fileName);
-
-  //Private methods
-  //----------------------------------------------------------------------------
+    // Private methods
+    //----------------------------------------------------------------------------
 private:
-
-  //initialize one element of the set with input data and output label
-  void setData(arma::field<arma::fvec> & data, std::string & filename);
-  //extract list data files name from a text file
-  void readListFile(std::string & listFile);
-
+    // initialize one element of the set with input data and output label
+    void setData(arma::field<arma::vec>& data, std::string& filename);
+    // extract list data files name from a text file
+    void readListFile(std::string& listFile);
 };
 
 #endif

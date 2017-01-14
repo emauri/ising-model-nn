@@ -1,0 +1,1 @@
+./Debug/main.cpp.o ./Debug/IsingDataLoader.cpp.o ./Debug/NetworkTrainer.cpp.o ./Debug/ShallowNetwork.cpp.o

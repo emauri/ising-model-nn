@@ -1,69 +1,69 @@
-//Header for the ShallowNetwork class
+// Header for the ShallowNetwork class
 #ifndef SHALLOWNETWORK_H
 #define SHALLOWNETWORK_H
-#include<armadillo>
+#include <armadillo>
 
-//friend class
+// friend class
 class NetworkTrainer;
 
-class ShallowNetwork {
+class ShallowNetwork
+{
 
-  //Class members
-  //----------------------------------------------------------------------------
-private:
-
-  //Number of neurons in each layer
-  uint32_t inputNeurons, hiddenNeurons, outputNeurons;
-
-  //Neurons layers as vectors
-  arma::fvec hidden, output;
-
-  //Neurons biases stored as vectors for each layer
-  arma::fvec hiddenBias, outputBias;
-
-  //Weight matrices within layers
-  arma::fmat weightInputHidden, weightHiddenOutput;
-
-  //Public Methods
-  //----------------------------------------------------------------------------
+    // Class members
+    //----------------------------------------------------------------------------
 public:
+    // Number of neurons in each layer
+    uint32_t inputNeurons, hiddenNeurons, outputNeurons;
 
-  //Constructor with default values for data members
-  ShallowNetwork(uint32_t inputNeurons = 2500, uint32_t hiddenNeurons = 30, uint32_t outputNeurons = 2);
+    // Neurons layers as vectors
+    arma::vec hidden, output;
 
-  //getters and setters
-  arma::Col<uint32_t> getStructure() const;
+    // Neurons biases stored as vectors for each layer
+    arma::vec hiddenBias, outputBias;
 
-  //As of now, I am not going to allow setters, initialize the network with the right values using the constructor.
-  /*
-  void setInputNeurons(uint32_t inputNeurons);
-  void setHiddenNeurons(uint32_t hiddenNeurons);
-  void setOutputNeurons(uint32_t outputNeurons);
-  void setStructure(arma::Col<uint32_t> & structure);
-*/
+    // Weight matrices within layers
+    arma::mat weightInputHidden, weightHiddenOutput;
 
-  //save to and load a network form the given directory. If used with no arguments it saves to and load from the same directory as the file.
-  bool saveNetwork(const char * directoryName = ".");
-  bool loadNetwork(const char * directoryName = ".");
+    // Public Methods
+    //----------------------------------------------------------------------------
+public:
+    // Constructor with default values for data members
+    ShallowNetwork(uint32_t inputNeurons = 2500, uint32_t hiddenNeurons = 100, uint32_t outputNeurons = 2);
 
-  //get the result of the network evaluation: feedforward input -> return the index of the neuron with the highest output value;
-  uint32_t getResult(arma::fvec & input);
+    // getters and setters
+    arma::Col<uint32_t> getStructure() const;
 
-  //training evaluation
-  float getAccuracyOfSet(arma::field< arma::field<arma::fvec> > * set);
+    // As of now, I am not going to allow setters, initialize the network with the right values using the constructor.
+    /*
+    void setInputNeurons(uint32_t inputNeurons);
+    void setHiddenNeurons(uint32_t hiddenNeurons);
+    void setOutputNeurons(uint32_t outputNeurons);
+    void setStructure(arma::Col<uint32_t> & structure);
+  */
 
-  //Friends
-	//--------------------------------------------------------------------------------------------
-	friend NetworkTrainer;
+    // save to and load a network form the given directory. If used with no arguments it saves to and load from the same
+    // directory as the file.
+    bool saveNetwork(const char* directoryName = ".");
+    bool loadNetwork(const char* directoryName = ".");
 
-  //Private methods
-  //----------------------------------------------------------------------------
+    // get the result of the network evaluation: feedforward input -> return the index of the neuron with the highest
+    // output value;
+    uint32_t getResult(arma::vec& input);
+
+    // training evaluation
+    float getAccuracyOfSet(arma::field<arma::field<arma::vec> >* set);
+
+    // Friends
+    //--------------------------------------------------------------------------------------------
+    friend NetworkTrainer;
+
+    // Private methods
+    //----------------------------------------------------------------------------
 private:
-
-  void initializeBiases();
-  void initializeWeights();
-  void activationFunction(arma::fvec & input);
-  void feedForward(arma::fvec & input);
+    void initializeBiases();
+    void initializeWeights();
+    void activationFunction(arma::vec& input);
+    void feedForward(arma::vec& input);
 };
 
 #endif

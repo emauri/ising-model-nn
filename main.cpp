@@ -1,6 +1,6 @@
 /****************************************************************************************
 Using LAPACK and OpenBLAS packages on Armadillo
-Armadillo package version 7.600.2 installed via website: http://arma.sourceforge.net/download.html
+Armadillo package version 7.600.2 installed via website: http://arma.sourceforge.net
 LAPACK-dev and OpenBLAS-dev package installed via apt-get
 
 Inside file ¨config.hpp¨ in /usr/local/include/armadillo_bits:
@@ -30,9 +30,21 @@ Libraries: libmcbsp1.2.0.a
 
 using namespace arma;
 
-#define SIZEUI (sizeof(unsigned int))
+#define SIZED (sizeof(double))
+#define TOTTEST 5000
+#define TOTTRAIN 33000
+#define TOTVAL 5000
 
-unsigned int n_cores;
+#define INPUTNEURONS 2500
+#define HIDDENNEURONS 100
+#define OUTPUTNEURONS 2
+
+#define LEARNINGRATE 0.01
+#define NUMEPOCH 3
+#define BATCHSIZE 100
+#define USEVALIDATION true
+
+unsigned int n_cores, n_queries;
 
 void IsingParallelNN()
 {
@@ -44,41 +56,81 @@ void IsingParallelNN()
      ********************************************************************/
     unsigned int pid = bsp_pid();
 
-    // Load seperate data sets on each core
+    // LOAD SEPERATE DATA SETS ON EACH CORE
     //----------------------------------------------------------------------------
     IsingDataLoader training;
     IsingDataLoader validation;
     IsingDataLoader test;
 
-    test.loadData(70, "dataList/testData.txt");
-    training.loadData(330, "dataList/trainingData.txt");
-    validation.loadData(50, "dataList/validationData.txt");
+    test.loadData(TOTTEST, 0, 1, "dataList/testData.txt");
+    training.loadData(TOTTRAIN, pid, n_cores, "dataList/trainingData.txt");
+    validation.loadData(TOTVAL, pid, n_cores, "dataList/validationData.txt");
 
-    // Initialize network and trainer on each core
+    // INITIALIZE NETWORK ON EACH CORE
     //----------------------------------------------------------------------------
 
-    ShallowNetwork network(2500, 100, 2);
+    ShallowNetwork network(INPUTNEURONS, HIDDENNEURONS, OUTPUTNEURONS);
 
-    NetworkTrainer trainer(&network, 0.01, 5, 100, true);
+    // POINTER ARRAYS TO VEC AND MAT TYPES TO USE IN BSP FUNCTIONS
+    double* localHiddenBias = network.hiddenBias.memptr();
+    double* localOutputBias = network.outputBias.memptr();
+    double* localWeightInputHidden = network.weightInputHidden.memptr();
+    double* localWeightHiddenOutput = network.weightHiddenOutput.memptr();
 
-    // train the network on each core
+    // REGISTER INTO STACK
+    bsp_push_reg(localWeightInputHidden, HIDDENNEURONS * INPUTNEURONS * SIZED);
+    bsp_push_reg(localWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZED);
+    bsp_push_reg(localHiddenBias, HIDDENNEURONS * SIZED);
+    bsp_push_reg(localOutputBias, OUTPUTNEURONS * SIZED);
+    bsp_sync();
+
+    // COMMUNICATE WEIGHTS AND BIASES FROM PROCESSOR 0 TO ALL OTHER PROCESSOR
+    bsp_get(0, localWeightInputHidden, 0, localWeightInputHidden, HIDDENNEURONS * INPUTNEURONS * SIZED);
+    bsp_get(0, localWeightHiddenOutput, 0, localWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZED);
+    bsp_get(0, localHiddenBias, 0, localHiddenBias, HIDDENNEURONS * SIZED);
+    bsp_get(0, localOutputBias, 0, localOutputBias, OUTPUTNEURONS * SIZED);
+    bsp_sync();
+
+    // CONVERT FROM ARRAY POINTER BACK TO VEC AND MAT TYPE
+    arma::mat LocalWeightInputHidden(localWeightInputHidden, HIDDENNEURONS, INPUTNEURONS);
+    arma::mat LocalWeightHiddenOutput(localWeightHiddenOutput, OUTPUTNEURONS, HIDDENNEURONS);
+    arma::vec LocalHiddenBias(localHiddenBias, HIDDENNEURONS);
+    arma::vec LocalOutputBias(localOutputBias, OUTPUTNEURONS);
+
+    // SET WEIGHTS AND BIASES ON EACH CORE TO THE SAME VALUE AS ONES ON PROCESSOR 0
+    network.weightInputHidden = LocalWeightInputHidden;
+    network.weightHiddenOutput = LocalWeightHiddenOutput;
+    network.hiddenBias = LocalHiddenBias;
+    network.outputBias = LocalOutputBias;
+
+    if(pid == pid) {
+
+        std::cout << "This is core " << pid << std::endl
+                  << "Test data accuracy before training: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
+        bsp_sync();
+    }
+
+    // TRAIN NETWORK ON EACH CORE
+    //----------------------------------------------------------------------------
+
+    NetworkTrainer trainer(&network, LEARNINGRATE, NUMEPOCH, BATCHSIZE, USEVALIDATION);
+
+    // TRAIN THE NETWORK ON EACH CORE
     //----------------------------------------------------------------------------
     trainer.trainNetwork(training.getDataSet(), validation.getDataSet());
 
-    // test network accuracy on dataset
+    // TEST NETWORK ACCURACY ON DATASET
     //----------------------------------------------------------------------------
     bsp_sync();
 
     if(pid == pid) {
+
         std::cout << "This is core " << pid << std::endl
-                  << "Test data accuracy: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
+                  << "Test data accuracy after training: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
+        bsp_sync();
     }
 
-    // Send weights and biases to 
-    // Register into stack
-    /*    bsp_push_reg(query_rep, n_queries * SIZEUI);
-            bsp_push_reg(Query_rep, n_queries * n_cores * SIZEUI);
-            bsp_sync();*/
+    // SEND WEIGHTS AND BIASES TO PROCESSOR 0
 
     bsp_sync();
     bsp_end();
@@ -100,9 +152,9 @@ int main(int argc, char* argv[])
     //    IsingDataLoader validation;
     //    IsingDataLoader test;
     //
-    //    test.loadData(50, "dataList/testData.txt");
-    //    training.loadData(330, "dataList/trainingData.txt");
-    //    validation.loadData(50, "dataList/validationData.txt");
+    //    test.loadData(15,1,4, "dataList/testData.txt");
+    //    training.loadData(16,3,4, "dataList/trainingData.txt");
+    //    validation.loadData(16,2,4, "dataList/validationData.txt");
     //
     //    // initialize network and trainer
     //    //----------------------------------------------------------------------------
@@ -110,9 +162,9 @@ int main(int argc, char* argv[])
     //    ShallowNetwork network(2500, 100, 2);
     //
     //    NetworkTrainer trainer(&network, 0.01, 5, 100, true);
-    //    trainer.trainNetwork(training.getDataSet(), validation.getDataSet());
-    //
-    //    std::cout << "Test data accuracy: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
+    //  trainer.trainNetwork(training.getDataSet(), validation.getDataSet());
+    ////
+    ////    std::cout << "Test data accuracy: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
     IsingParallelNN();
 
     return 0;
