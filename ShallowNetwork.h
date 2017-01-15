@@ -16,13 +16,13 @@ private:
   uint32_t inputNeurons, hiddenNeurons, outputNeurons;
 
   //Neurons layers as vectors
-  arma::fvec hidden, output;
+  arma::vec hidden, output;
 
   //Neurons biases stored as vectors for each layer
-  arma::fvec hiddenBias, outputBias;
+  arma::vec hiddenBias, outputBias;
 
   //Weight matrices within layers
-  arma::fmat weightInputHidden, weightHiddenOutput;
+  arma::mat weightInputHidden, weightHiddenOutput;
 
   //Public Methods
   //----------------------------------------------------------------------------
@@ -47,10 +47,10 @@ public:
   bool loadNetwork(const char * directoryName = ".");
 
   //get the result of the network evaluation;
-  uint32_t getResult(arma::fvec & input);
+  uint32_t getResult(arma::vec & input);
 
   //training evaluation
-  float getAccuracyOfSet(arma::field< arma::field<arma::fvec> > * set);
+  double getAccuracyOfSet(arma::field< arma::field<arma::vec> > * set);
 
   //Friends
 	//--------------------------------------------------------------------------------------------
@@ -62,8 +62,8 @@ private:
 
   void initializeBiases();
   void initializeWeights();
-  void activationFunction(arma::fvec & input);
-  void feedForward(arma::fvec & input);
+  void activationFunction(arma::vec & input);
+  void feedForward(arma::vec & input);
 };
 
 #endif

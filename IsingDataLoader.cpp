@@ -7,13 +7,13 @@
 using namespace arma;
 
 //getter
-field< field<fvec> > * IsingDataLoader::getDataSet() {
+field< field<vec> > * IsingDataLoader::getDataSet() {
   return &(set);
 }
 
 //Read data from one file and initialize one elemnt of set, i.e. it initializes
 //two vectors, one with the input configuration and one with the corresponding ouput label.
-void IsingDataLoader::setData(field<fvec> & data, std::string & filename) {
+void IsingDataLoader::setData(field<vec> & data, std::string & filename) {
 
   //set data size to 2 (input configuration, output label)
   data.set_size(2);
@@ -21,7 +21,7 @@ void IsingDataLoader::setData(field<fvec> & data, std::string & filename) {
   //load the data in the file, the first line contain the size of the Ising lattice,
   //the second line contains the temperature of the system. From the third line
   //onwards the file contains the Ising spin configuration
-  fvec fileData;
+  vec fileData;
   fileData.load(filename);
 
   //Set the output label

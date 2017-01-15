@@ -7,7 +7,7 @@
 using namespace arma;
 
 //constructor
-NetworkTrainer::NetworkTrainer(ShallowNetwork * network, float lR, uint32_t nOE, uint32_t bS, float r, bool uV) : network(network), learningRate(lR), numberOfEpochs(nOE), batchSize(bS), regularizer(r), useValidation(uV) {
+NetworkTrainer::NetworkTrainer(ShallowNetwork * network, double lR, uint32_t nOE, uint32_t bS, double r, bool uV) : network(network), learningRate(lR), numberOfEpochs(nOE), batchSize(bS), regularizer(r), useValidation(uV) {
 
   //initialize deltaBias vectors
   deltaHiddenBias.zeros(network->hiddenNeurons);
@@ -28,7 +28,7 @@ NetworkTrainer::NetworkTrainer(ShallowNetwork * network, float lR, uint32_t nOE,
 }
 
 //setters
-void NetworkTrainer::setTrainingParameters(float learningRate, uint32_t numberOfEpochs, uint32_t batchSize, float regularizer, bool useValidation) {
+void NetworkTrainer::setTrainingParameters(double learningRate, uint32_t numberOfEpochs, uint32_t batchSize, double regularizer, bool useValidation) {
   this->learningRate = learningRate;
   this->numberOfEpochs = numberOfEpochs;
   this->batchSize = batchSize;
@@ -37,19 +37,19 @@ void NetworkTrainer::setTrainingParameters(float learningRate, uint32_t numberOf
 }
 
 //conpute output error using cross-entropy cost function
-fvec NetworkTrainer::getOutputError(fvec & output, fvec & label) {
+vec NetworkTrainer::getOutputError(vec & output, vec & label) {
 
   //return output error
   return (output - label);
 }
 
 //implementation of backpropagation algorithm
-void NetworkTrainer::backpropagation(fvec & input, fvec & label) {
+void NetworkTrainer::backpropagation(vec & input, vec & label) {
 
   //feed forward
   network->feedForward(input);
 
-  fvec delta = getOutputError(network->output, label);
+  vec delta = getOutputError(network->output, label);
   deltaOutputBias += delta;
 
   //compute error in the hidden-output weights
@@ -66,7 +66,7 @@ void NetworkTrainer::backpropagation(fvec & input, fvec & label) {
 }
 
 //update network weights and biases
-void NetworkTrainer::updateNetwork(field< field<fvec> > * trainingSet, uint32_t currentBatchStart, uint32_t size) {
+void NetworkTrainer::updateNetwork(field< field<vec> > * trainingSet, uint32_t currentBatchStart, uint32_t size) {
 
   //if the current batch is not the first one, reset all the errors in weights and biases to zero
   if (currentBatchStart) {
@@ -89,8 +89,8 @@ void NetworkTrainer::updateNetwork(field< field<fvec> > * trainingSet, uint32_t 
   }
 
   //update weights
-  float prefactor = learningRate / batchSize;
-  float regularizationTerm = (1 - learningRate * regularizer / size);
+  double prefactor = learningRate / batchSize;
+  double regularizationTerm = (1 - learningRate * regularizer / size);
 
   network->weightInputHidden = regularizationTerm * ( network->weightInputHidden ) - prefactor * deltaWeightInputHidden;
 
@@ -103,7 +103,7 @@ void NetworkTrainer::updateNetwork(field< field<fvec> > * trainingSet, uint32_t 
 }
 
 //implement stocastic gradient descent to train the network
-void NetworkTrainer::stochasticGradientDescent(field< field<fvec> > * trainingSet, uint32_t size) {
+void NetworkTrainer::stochasticGradientDescent(field< field<vec> > * trainingSet, uint32_t size) {
 
   //shuffle data in the training set
   shuffleData = shuffle(shuffleData);
@@ -119,7 +119,7 @@ void NetworkTrainer::stochasticGradientDescent(field< field<fvec> > * trainingSe
 }
 
 //train the neural network
-void NetworkTrainer::trainNetwork(field< field <fvec> > * trainingSet, field < field<fvec> > * validationSet) {
+void NetworkTrainer::trainNetwork(field< field <vec> > * trainingSet, field < field<vec> > * validationSet) {
 
   //initialize shuffleData
   uint32_t trainingSize = trainingSet->n_elem;
@@ -129,7 +129,7 @@ void NetworkTrainer::trainNetwork(field< field <fvec> > * trainingSet, field < f
   }
   std::cout	<< std::endl << " Neural network ready to start training: " << std::endl
 			<< "==========================================================================" << std::endl
-			<< " LR: " << learningRate << ", Number of Epochs: " << numberOfEpochs << ", Batch size: " << batchSize << std::endl
+			<< " Learning Rate: " << learningRate << ", Number of Epochs: " << numberOfEpochs << ", Batch size: " << batchSize << std::endl
 			<< " " << network->inputNeurons << " Input Neurons, " << network->hiddenNeurons << " Hidden Neurons, " << network->outputNeurons << " Output Neurons" << std::endl
 			<< "==========================================================================" << std::endl << std::endl;
   //loop over the number of epochs
@@ -158,14 +158,14 @@ void NetworkTrainer::trainNetwork(field< field <fvec> > * trainingSet, field < f
 }
 
 //define cross-entropy cost function
-float NetworkTrainer::crossEntropy(fvec & output, fvec & label) {
+double NetworkTrainer::crossEntropy(vec & output, vec & label) {
 
   return accu(-label % log(output) + (label - 1) % log(1 - output));
 }
 
-float NetworkTrainer::monitorCost(field< field<fvec> > * set) {
+double NetworkTrainer::monitorCost(field< field<vec> > * set) {
 
-  float totalCost = 0;
+  double totalCost = 0;
 
   uint32_t size = set->n_elem;
 

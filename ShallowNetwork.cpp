@@ -80,17 +80,16 @@ void ShallowNetwork::initializeWeights() {
   //----------------------------------------------------------------------------
 
   //standard deviation of the Gaussian distribution
-  float stdDev = 1.0 / (float)sqrt(inputNeurons);
+  double stdDev = 1.0 / (double)sqrt(inputNeurons);
 
   //initialize the weights and rescale them
   weightInputHidden.randn(hiddenNeurons, inputNeurons);
   weightInputHidden *= stdDev;
-
   //set weights between hidden and output layers
   //----------------------------------------------------------------------------
 
   //standard deviation of the Gaussian
-  stdDev = 1 / (float) sqrt(hiddenNeurons);
+  stdDev = 1 / (double) sqrt(hiddenNeurons);
 
   //initialize the weights and rescale them
   weightHiddenOutput.randn(outputNeurons, hiddenNeurons);
@@ -152,14 +151,14 @@ bool ShallowNetwork::loadNetwork(const char * directoryName) {
 }
 
 //Activation function
-void ShallowNetwork::activationFunction(fvec & input) {
-  
+void ShallowNetwork::activationFunction(vec & input) {
+
   //sigmoid function
   input = 1.0 / (1.0 + exp(-input));
 }
 
 //Feed Forward procedure
-void ShallowNetwork::feedForward(fvec & input) {
+void ShallowNetwork::feedForward(vec & input) {
 
   //calculate output from hidden layer
   //----------------------------------------------------------------------------
@@ -173,7 +172,7 @@ void ShallowNetwork::feedForward(fvec & input) {
 }
 
 //get the output neuron with the highest output value
-uint32_t ShallowNetwork::getResult(fvec & input) {
+uint32_t ShallowNetwork::getResult(vec & input) {
 
   //feedforward input
   ShallowNetwork::feedForward(input);
@@ -183,8 +182,8 @@ uint32_t ShallowNetwork::getResult(fvec & input) {
 }
 
 //accuracy on an input set
-float ShallowNetwork::getAccuracyOfSet(field< field<fvec> > * set) {
-  float incorrectResults = 0;
+double ShallowNetwork::getAccuracyOfSet(field< field<vec> > * set) {
+  double incorrectResults = 0;
 
   //compare result of each input with corresponding label
   uint32_t size = set->n_elem;

@@ -13,7 +13,7 @@ private:
   //data structure to load the data, is a field of field of vectors. Each field
   //represent one training data, each containing a input configuration and a
   //output label.
-  arma::field< arma::field<arma::fvec> > set;
+  arma::field< arma::field<arma::vec> > set;
 
   //Public methods
   //----------------------------------------------------------------------------
@@ -26,7 +26,7 @@ public:
   bool loadData(const char * fileName);
 
   //Getter for the data set. Return a pointer to the loaded dat set
-  arma::field< arma::field<arma::fvec> > * getDataSet();
+  arma::field< arma::field<arma::vec> > * getDataSet();
 
   bool saveDataSet(const char * fileName);
 
@@ -35,7 +35,7 @@ public:
 private:
 
   //initialize one element of the set with input data and output label
-  void setData(arma::field<arma::fvec> & data, std::string & filename);
+  void setData(arma::field<arma::vec> & data, std::string & filename);
   //estract list data files name from a text file
   void readListFile(std::string & listFile);
 
