@@ -40,7 +40,7 @@ using namespace arma;
 #define OUTPUTNEURONS 2
 
 #define LEARNINGRATE 0.01
-#define NUMEPOCH 20
+#define NUMEPOCH 40
 #define BATCHSIZE 100
 #define USEVALIDATION true
 
@@ -64,7 +64,7 @@ void IsingParallelNN()
 
     test.loadData(TOTTEST, 0, 1, "dataList/testData.txt");
     training.loadData(TOTTRAIN, pid, n_cores, "dataList/trainingData.txt");
-    validation.loadData(TOTVAL, pid, n_cores, "dataList/validationData.txt");
+    validation.loadData(TOTVAL, 0, 1, "dataList/validationData.txt");
 
     // INITIALIZE NETWORK ON EACH CORE
     //----------------------------------------------------------------------------
@@ -103,6 +103,7 @@ void IsingParallelNN()
     network.hiddenBias = LocalHiddenBias;
     network.outputBias = LocalOutputBias;
 
+    bsp_sync();
     if(pid == pid) {
 
         std::cout << "This is core " << pid << std::endl
@@ -125,35 +126,37 @@ void IsingParallelNN()
         double* otherHiddenBias = new double[OUTPUTNEURONS * HIDDENNEURONS];
         double* otherOutputBias = new double[OUTPUTNEURONS * HIDDENNEURONS];
 
+        arma::mat CumWeightInputHidden(HIDDENNEURONS, INPUTNEURONS, fill::zeros);
+        arma::mat CumWeightHiddenOutput(OUTPUTNEURONS, HIDDENNEURONS, fill::zeros);
+        arma::vec CumHiddenBias(HIDDENNEURONS, fill::zeros);
+        arma::vec CumOutputBias(OUTPUTNEURONS, fill::zeros);
+
         // GET WEIGHT AND BIASES FROM EACH CORE, SAVE TO POINTER other(...)
         for(uint32_t j = 0; j < n_cores; j++) {
-            if(pid != j) {
-                bsp_get(j, localWeightInputHidden, 0, otherWeightInputHidden, HIDDENNEURONS * INPUTNEURONS * SIZED);
-                bsp_get(j, localWeightHiddenOutput, 0, otherWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZED);
-                bsp_get(j, localHiddenBias, 0, otherHiddenBias, HIDDENNEURONS * SIZED);
-                bsp_get(j, localOutputBias, 0, otherOutputBias, OUTPUTNEURONS * SIZED);
 
-                // CONVERT FROM ARRAY POINTER BACK TO VEC AND MAT TYPE
-                arma::mat OtherWeightInputHidden(otherWeightInputHidden, HIDDENNEURONS, INPUTNEURONS);
-                arma::mat OtherWeightHiddenOutput(otherWeightHiddenOutput, OUTPUTNEURONS, HIDDENNEURONS);
-                arma::vec OtherHiddenBias(otherHiddenBias, HIDDENNEURONS);
-                arma::vec OtherOutputBias(otherOutputBias, OUTPUTNEURONS);
+            bsp_get(j, localWeightInputHidden, 0, otherWeightInputHidden, HIDDENNEURONS * INPUTNEURONS * SIZED);
+            bsp_get(j, localWeightHiddenOutput, 0, otherWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZED);
+            bsp_get(j, localHiddenBias, 0, otherHiddenBias, HIDDENNEURONS * SIZED);
+            bsp_get(j, localOutputBias, 0, otherOutputBias, OUTPUTNEURONS * SIZED);
 
-                // SET WEIGHTS AND BIASES ON EACH CORE TO THE SAME VALUE AS ONES ON PROCESSOR 0
-                network.weightInputHidden += OtherWeightInputHidden;
-                network.weightHiddenOutput += OtherWeightHiddenOutput;
-                network.hiddenBias += OtherHiddenBias;
-                network.outputBias += OtherOutputBias;
+            bsp_sync();
 
-                bsp_sync();
-            }
+            // CUMMULATE WEIGHT AND BIAS
+            CumWeightInputHidden += arma::mat(otherWeightInputHidden, HIDDENNEURONS, INPUTNEURONS);
+            ;
+            CumWeightHiddenOutput += arma::mat(otherWeightHiddenOutput, OUTPUTNEURONS, HIDDENNEURONS);
+            ;
+            CumHiddenBias += arma::vec(otherHiddenBias, HIDDENNEURONS);
+            ;
+            CumOutputBias += arma::vec(otherOutputBias, OUTPUTNEURONS);
+            ;
         }
 
         // TAKE AVERAGE
-        network.weightInputHidden = network.weightInputHidden / n_cores;
-        network.weightHiddenOutput = network.weightHiddenOutput / n_cores;
-        network.hiddenBias = network.hiddenBias / n_cores;
-        network.outputBias = network.outputBias / n_cores;
+        network.weightInputHidden = CumWeightInputHidden / n_cores;
+        network.weightHiddenOutput = CumWeightHiddenOutput / n_cores;
+        network.hiddenBias = CumHiddenBias / n_cores;
+        network.outputBias = CumOutputBias / n_cores;
     }
 
     // TEST NETWORK ACCURACY ON DATASET
@@ -164,9 +167,10 @@ void IsingParallelNN()
 
         std::cout << "This is core " << pid << std::endl
                   << "Test data accuracy after training: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
+
         bsp_sync();
     }
-
+//    network.saveNetwork(pid, ".");
     bsp_sync();
     bsp_end();
 }
@@ -181,6 +185,7 @@ int main(int argc, char* argv[])
     bsp_init(IsingParallelNN, argc, argv);
 
     n_cores = bsp_nprocs();
+
     //    // load data sets
     //    //----------------------------------------------------------------------------
     //    IsingDataLoader training;

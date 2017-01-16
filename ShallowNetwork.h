@@ -43,7 +43,7 @@ public:
 
     // save to and load a network form the given directory. If used with no arguments it saves to and load from the same
     // directory as the file.
-    bool saveNetwork(const char* directoryName = ".");
+    bool saveNetwork(int pid, const char* directoryName = ".");
     bool loadNetwork(const char* directoryName = ".");
 
     // get the result of the network evaluation: feedforward input -> return the index of the neuron with the highest

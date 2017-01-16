@@ -141,6 +141,9 @@ void NetworkTrainer::trainNetwork(uint32_t currentEpoch,
 
     // initialize shuffleData
     uint32_t trainingSize = trainingSet->n_elem;
+    
+    batchSize = trainingSize;
+    
     shuffleData.set_size(trainingSize);
     for(uint32_t i = 0; i < trainingSize; ++i) {
         shuffleData(i) = i;

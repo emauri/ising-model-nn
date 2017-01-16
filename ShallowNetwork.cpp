@@ -107,7 +107,7 @@ void ShallowNetwork::initializeWeights()
 }
 
 // Save network configuration
-bool ShallowNetwork::saveNetwork(const char* directoryName)
+bool ShallowNetwork::saveNetwork(int pid, const char* directoryName)
 {
 
     // convert directoryName to std::string
@@ -117,19 +117,19 @@ bool ShallowNetwork::saveNetwork(const char* directoryName)
     //----------------------------------------------------------------------------
 
     // save input-hidden weigths matrix
-    bool ihWStatus = weightInputHidden.save(stringName + "/ih_weights.txt");
+    bool ihWStatus = weightInputHidden.save(stringName + "/ih_weights_" + std::to_string(pid) + ".txt", arma_ascii);
 
     // save hidden-output weights matrix
-    bool hoWStatus = weightHiddenOutput.save(stringName + "/ho_weights.txt");
+    bool hoWStatus = weightHiddenOutput.save(stringName + "/ho_weights_" + std::to_string(pid) + ".txt", arma_ascii);
 
     // save biases vectors to .txt file in arma_binary format
     //----------------------------------------------------------------------------
 
     // save hidden layer biases vector
-    bool hBStatus = hiddenBias.save(stringName + "/h_bias.txt");
+    bool hBStatus = hiddenBias.save(stringName + "/h_bias_" + std::to_string(pid) + ".txt", arma_ascii);
 
     // save output layer biases vector
-    bool oBStatus = outputBias.save(stringName + "/o_bias.txt");
+    bool oBStatus = outputBias.save(stringName + "/o_bias_" + std::to_string(pid) + ".txt", arma_ascii);
 
     return (hoWStatus && ihWStatus && hBStatus && oBStatus);
 }
