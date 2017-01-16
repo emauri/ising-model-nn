@@ -16,10 +16,10 @@ private:
     ShallowNetwork* network;
 
     // vectors storing changes in biases during gradient descent
-    arma::vec deltaHiddenBias, deltaOutputBias;
+    arma::fvec deltaHiddenBias, deltaOutputBias;
 
     // matrices storing cahnges in weights during gradient descent
-    arma::mat deltaWeightInputHidden, deltaWeightHiddenOutput;
+    arma::fmat deltaWeightInputHidden, deltaWeightHiddenOutput;
 
     // learning parameters
     float learningRate;
@@ -31,9 +31,9 @@ private:
     // monitor progress during learning
     float incorrectResults = 0;
 
-    arma::vec trainingAccuracy;
-    arma::vec validationAccuracy;
-    arma::vec validationCost;
+    arma::fvec trainingAccuracy;
+    arma::fvec validationAccuracy;
+    arma::fvec validationCost;
 
     // store shuffled indeces to access data in random order
     arma::Col<uint32_t> shuffleData;
@@ -53,25 +53,25 @@ public:
     setTrainingParameters(float learningRate, uint32_t numberOfEpochs, uint32_t batchSize, bool useValidation = false);
 
     // getters for monitorig vector
-    arma::vec getTrainingAccuracy() const;
-    arma::vec getValidationAccuracy() const;
-    arma::vec getValidationCost() const;
+    arma::fvec getTrainingAccuracy() const;
+    arma::fvec getValidationAccuracy() const;
+    arma::fvec getValidationCost() const;
 
     // network trainer
     void trainNetwork(uint32_t currentEpoch,
         uint32_t totalEpochs,
-        arma::field<arma::field<arma::vec> >* trainingSet,
-        arma::field<arma::field<arma::vec> >* validationSet = NULL);
+        arma::field<arma::field<arma::fvec> >* trainingSet,
+        arma::field<arma::field<arma::fvec> >* validationSet = NULL);
 
     // private Methods
     //----------------------------------------------------------------------------
 private:
-    arma::vec getOutputError(arma::vec& output, arma::vec& label);
-    void stochasticGradientDescent(arma::field<arma::field<arma::vec> >* trainingSet, uint32_t size);
-    void updateNetwork(arma::field<arma::field<arma::vec> >* trainingSet, uint32_t currentBatchStart, uint32_t size);
-    void backpropagation(arma::vec& input, arma::vec& label);
-    float crossEntropy(arma::vec& output, arma::vec& label);
-    float monitorCost(arma::field<arma::field<arma::vec> >* set);
+    arma::fvec getOutputError(arma::fvec& output, arma::fvec& label);
+    void stochasticGradientDescent(arma::field<arma::field<arma::fvec> >* trainingSet, uint32_t size);
+    void updateNetwork(arma::field<arma::field<arma::fvec> >* trainingSet, uint32_t currentBatchStart, uint32_t size);
+    void backpropagation(arma::fvec& input, arma::fvec& label);
+    float crossEntropy(arma::fvec& output, arma::fvec& label);
+    float monitorCost(arma::field<arma::field<arma::fvec> >* set);
 };
 
 #endif

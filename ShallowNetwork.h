@@ -16,13 +16,13 @@ public:
     uint32_t inputNeurons, hiddenNeurons, outputNeurons;
 
     // Neurons layers as vectors
-    arma::vec hidden, output;
+    arma::fvec hidden, output;
 
     // Neurons biases stored as vectors for each layer
-    arma::vec hiddenBias, outputBias;
+    arma::fvec hiddenBias, outputBias;
 
     // Weight matrices within layers
-    arma::mat weightInputHidden, weightHiddenOutput;
+    arma::fmat weightInputHidden, weightHiddenOutput;
 
     // Public Methods
     //----------------------------------------------------------------------------
@@ -48,10 +48,10 @@ public:
 
     // get the result of the network evaluation: feedforward input -> return the index of the neuron with the highest
     // output value;
-    uint32_t getResult(arma::vec& input);
+    uint32_t getResult(arma::fvec& input);
 
     // training evaluation
-    float getAccuracyOfSet(arma::field<arma::field<arma::vec> >* set);
+    float getAccuracyOfSet(arma::field<arma::field<arma::fvec> >* set);
 
     // Friends
     //--------------------------------------------------------------------------------------------
@@ -62,8 +62,8 @@ public:
 private:
     void initializeBiases();
     void initializeWeights();
-    void activationFunction(arma::vec& input);
-    void feedForward(arma::vec& input);
+    void activationFunction(arma::fvec& input);
+    void feedForward(arma::fvec& input);
 };
 
 #endif

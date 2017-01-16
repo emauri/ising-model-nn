@@ -46,7 +46,7 @@ void NetworkTrainer::setTrainingParameters(float learningRate,
 }
 
 // conpute output error using cross-entropy cost function
-vec NetworkTrainer::getOutputError(vec& output, vec& label)
+fvec NetworkTrainer::getOutputError(fvec& output, fvec& label)
 {
 
     // return output error
@@ -54,13 +54,13 @@ vec NetworkTrainer::getOutputError(vec& output, vec& label)
 }
 
 // implementation of backpropagation algorithm
-void NetworkTrainer::backpropagation(vec& input, vec& label)
+void NetworkTrainer::backpropagation(fvec& input, fvec& label)
 {
 
     // feed forward
     network->feedForward(input);
 
-    vec delta = getOutputError(network->output, label);
+    fvec delta = getOutputError(network->output, label);
     deltaOutputBias += delta;
 
     // compute error in the hidden-output weights
@@ -79,7 +79,7 @@ void NetworkTrainer::backpropagation(vec& input, vec& label)
 }
 
 // update network weights and biases
-void NetworkTrainer::updateNetwork(field<field<vec> >* trainingSet, uint32_t currentBatchStart, uint32_t size)
+void NetworkTrainer::updateNetwork(field<field<fvec> >* trainingSet, uint32_t currentBatchStart, uint32_t size)
 {
 
     // if the current batch is not the first one, reset all the errors in weights and biases to zero
@@ -116,7 +116,7 @@ void NetworkTrainer::updateNetwork(field<field<vec> >* trainingSet, uint32_t cur
 }
 
 // implement stocastic gradient descent to train the network
-void NetworkTrainer::stochasticGradientDescent(field<field<vec> >* trainingSet, uint32_t size)
+void NetworkTrainer::stochasticGradientDescent(field<field<fvec> >* trainingSet, uint32_t size)
 {
 
     // shuffle data in the training set
@@ -135,8 +135,8 @@ void NetworkTrainer::stochasticGradientDescent(field<field<vec> >* trainingSet, 
 // train the neural network
 void NetworkTrainer::trainNetwork(uint32_t currentEpoch,
     uint32_t totalEpochs,
-    field<field<vec> >* trainingSet,
-    field<field<vec> >* validationSet)
+    field<field<fvec> >* trainingSet,
+    field<field<fvec> >* validationSet)
 {
 
     // initialize shuffleData
@@ -174,13 +174,13 @@ void NetworkTrainer::trainNetwork(uint32_t currentEpoch,
 }
 
 // define cross-entropy cost function
-float NetworkTrainer::crossEntropy(vec& output, vec& label)
+float NetworkTrainer::crossEntropy(fvec& output, fvec& label)
 {
 
     return accu(-label % log(output) + (label - 1) % log(1 - output));
 }
 
-float NetworkTrainer::monitorCost(field<field<vec> >* set)
+float NetworkTrainer::monitorCost(field<field<fvec> >* set)
 {
 
     float totalCost = 0;

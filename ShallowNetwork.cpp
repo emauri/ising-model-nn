@@ -163,7 +163,7 @@ bool ShallowNetwork::loadNetwork(const char* directoryName)
 }
 
 // Activation function
-void ShallowNetwork::activationFunction(vec& input)
+void ShallowNetwork::activationFunction(fvec& input)
 {
 
     // may use TANH function or linear?
@@ -172,7 +172,7 @@ void ShallowNetwork::activationFunction(vec& input)
 }
 
 // Feed Forward procedure
-void ShallowNetwork::feedForward(vec& input)
+void ShallowNetwork::feedForward(fvec& input)
 {
 
     // calculate output from hidden layer
@@ -187,7 +187,7 @@ void ShallowNetwork::feedForward(vec& input)
 }
 
 // get the output neuron with the highest output value
-uint32_t ShallowNetwork::getResult(vec& input)
+uint32_t ShallowNetwork::getResult(fvec& input)
 {
 
     // feedforward input
@@ -198,7 +198,7 @@ uint32_t ShallowNetwork::getResult(vec& input)
 }
 
 // accuracy on an input set
-float ShallowNetwork::getAccuracyOfSet(field<field<vec> >* set)
+float ShallowNetwork::getAccuracyOfSet(field<field<fvec> >* set)
 {
     float incorrectResults = 0;
 

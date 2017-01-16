@@ -22,6 +22,7 @@ Libraries: libmcbsp1.2.0.a
 #include <stdio.h>
 
 #include <armadillo>
+#include <chrono>
 #include <fstream>
 #include <math.h>
 
@@ -30,7 +31,7 @@ Libraries: libmcbsp1.2.0.a
 
 using namespace arma;
 
-#define SIZED (sizeof(double))
+#define SIZEF (sizeof(float))
 #define TOTTEST 5000
 #define TOTTRAIN 33000
 #define TOTVAL 5000
@@ -40,7 +41,7 @@ using namespace arma;
 #define OUTPUTNEURONS 2
 
 #define LEARNINGRATE 0.01
-#define NUMEPOCH 40
+#define NUMEPOCH 20
 #define BATCHSIZE 100
 #define USEVALIDATION true
 
@@ -72,38 +73,27 @@ void IsingParallelNN()
     ShallowNetwork network(INPUTNEURONS, HIDDENNEURONS, OUTPUTNEURONS);
 
     // POINTER ARRAYS TO VEC AND MAT TYPES TO USE IN BSP FUNCTIONS
-    double* localHiddenBias = network.hiddenBias.memptr();
-    double* localOutputBias = network.outputBias.memptr();
-    double* localWeightInputHidden = network.weightInputHidden.memptr();
-    double* localWeightHiddenOutput = network.weightHiddenOutput.memptr();
+    float* localHiddenBias = network.hiddenBias.memptr();
+    float* localOutputBias = network.outputBias.memptr();
+    float* localWeightInputHidden = network.weightInputHidden.memptr();
+    float* localWeightHiddenOutput = network.weightHiddenOutput.memptr();
 
     // REGISTER INTO STACK
-    bsp_push_reg(localWeightInputHidden, HIDDENNEURONS * INPUTNEURONS * SIZED);
-    bsp_push_reg(localWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZED);
-    bsp_push_reg(localHiddenBias, HIDDENNEURONS * SIZED);
-    bsp_push_reg(localOutputBias, OUTPUTNEURONS * SIZED);
+    bsp_push_reg(localWeightInputHidden, HIDDENNEURONS * INPUTNEURONS * SIZEF);
+    bsp_push_reg(localWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZEF);
+    bsp_push_reg(localHiddenBias, HIDDENNEURONS * SIZEF);
+    bsp_push_reg(localOutputBias, OUTPUTNEURONS * SIZEF);
     bsp_sync();
 
     // COMMUNICATE WEIGHTS AND BIASES FROM PROCESSOR 0 TO ALL OTHER PROCESSOR
-    bsp_get(0, localWeightInputHidden, 0, localWeightInputHidden, HIDDENNEURONS * INPUTNEURONS * SIZED);
-    bsp_get(0, localWeightHiddenOutput, 0, localWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZED);
-    bsp_get(0, localHiddenBias, 0, localHiddenBias, HIDDENNEURONS * SIZED);
-    bsp_get(0, localOutputBias, 0, localOutputBias, OUTPUTNEURONS * SIZED);
+    bsp_get(0, localWeightInputHidden, 0, localWeightInputHidden, HIDDENNEURONS * INPUTNEURONS * SIZEF);
+    bsp_get(0, localWeightHiddenOutput, 0, localWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZEF);
+    bsp_get(0, localHiddenBias, 0, localHiddenBias, HIDDENNEURONS * SIZEF);
+    bsp_get(0, localOutputBias, 0, localOutputBias, OUTPUTNEURONS * SIZEF);
     bsp_sync();
-
-    // CONVERT FROM ARRAY POINTER BACK TO VEC AND MAT TYPE
-    arma::mat LocalWeightInputHidden(localWeightInputHidden, HIDDENNEURONS, INPUTNEURONS);
-    arma::mat LocalWeightHiddenOutput(localWeightHiddenOutput, OUTPUTNEURONS, HIDDENNEURONS);
-    arma::vec LocalHiddenBias(localHiddenBias, HIDDENNEURONS);
-    arma::vec LocalOutputBias(localOutputBias, OUTPUTNEURONS);
 
     // SET WEIGHTS AND BIASES ON EACH CORE TO THE SAME VALUE AS ONES ON PROCESSOR 0
-    network.weightInputHidden = LocalWeightInputHidden;
-    network.weightHiddenOutput = LocalWeightHiddenOutput;
-    network.hiddenBias = LocalHiddenBias;
-    network.outputBias = LocalOutputBias;
 
-    bsp_sync();
     if(pid == pid) {
 
         std::cout << "This is core " << pid << std::endl
@@ -111,45 +101,47 @@ void IsingParallelNN()
         bsp_sync();
     }
 
+    double time0 = bsp_time();
+
+    // auto t1 = std::chrono::high_resolution_clock::now();
+
+    NetworkTrainer trainer(&network, LEARNINGRATE, 1, BATCHSIZE, USEVALIDATION);
+
     // TRAIN NETWORK ON EACH CORE
     //----------------------------------------------------------------------------
     for(uint32_t i = 0; i < NUMEPOCH; i++) {
-        NetworkTrainer trainer(&network, LEARNINGRATE, 1, BATCHSIZE, USEVALIDATION);
 
         trainer.trainNetwork(i, NUMEPOCH, training.getDataSet(), validation.getDataSet());
 
         // COMMUNICATE WEIGHTS AND BIASES TO EVERY CORES AFTER EVERY EPOCH
 
         // VARIABLE TO STORE WEIGHT AND BIASES FROM OTHER CORES
-        double* otherWeightInputHidden = new double[HIDDENNEURONS * INPUTNEURONS];
-        double* otherWeightHiddenOutput = new double[OUTPUTNEURONS * HIDDENNEURONS];
-        double* otherHiddenBias = new double[OUTPUTNEURONS * HIDDENNEURONS];
-        double* otherOutputBias = new double[OUTPUTNEURONS * HIDDENNEURONS];
 
-        arma::mat CumWeightInputHidden(HIDDENNEURONS, INPUTNEURONS, fill::zeros);
-        arma::mat CumWeightHiddenOutput(OUTPUTNEURONS, HIDDENNEURONS, fill::zeros);
-        arma::vec CumHiddenBias(HIDDENNEURONS, fill::zeros);
-        arma::vec CumOutputBias(OUTPUTNEURONS, fill::zeros);
+        float* otherWeightInputHidden = new float[HIDDENNEURONS * INPUTNEURONS];
+        float* otherWeightHiddenOutput = new float[OUTPUTNEURONS * HIDDENNEURONS];
+        float* otherHiddenBias = new float[OUTPUTNEURONS * HIDDENNEURONS];
+        float* otherOutputBias = new float[OUTPUTNEURONS * HIDDENNEURONS];
+
+        arma::fmat CumWeightInputHidden(HIDDENNEURONS, INPUTNEURONS, fill::zeros);
+        arma::fmat CumWeightHiddenOutput(OUTPUTNEURONS, HIDDENNEURONS, fill::zeros);
+        arma::fvec CumHiddenBias(HIDDENNEURONS, fill::zeros);
+        arma::fvec CumOutputBias(OUTPUTNEURONS, fill::zeros);
 
         // GET WEIGHT AND BIASES FROM EACH CORE, SAVE TO POINTER other(...)
         for(uint32_t j = 0; j < n_cores; j++) {
 
-            bsp_get(j, localWeightInputHidden, 0, otherWeightInputHidden, HIDDENNEURONS * INPUTNEURONS * SIZED);
-            bsp_get(j, localWeightHiddenOutput, 0, otherWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZED);
-            bsp_get(j, localHiddenBias, 0, otherHiddenBias, HIDDENNEURONS * SIZED);
-            bsp_get(j, localOutputBias, 0, otherOutputBias, OUTPUTNEURONS * SIZED);
+            bsp_get(j, localWeightInputHidden, 0, otherWeightInputHidden, HIDDENNEURONS * INPUTNEURONS * SIZEF);
+            bsp_get(j, localWeightHiddenOutput, 0, otherWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZEF);
+            bsp_get(j, localHiddenBias, 0, otherHiddenBias, HIDDENNEURONS * SIZEF);
+            bsp_get(j, localOutputBias, 0, otherOutputBias, OUTPUTNEURONS * SIZEF);
 
             bsp_sync();
 
             // CUMMULATE WEIGHT AND BIAS
-            CumWeightInputHidden += arma::mat(otherWeightInputHidden, HIDDENNEURONS, INPUTNEURONS);
-            ;
-            CumWeightHiddenOutput += arma::mat(otherWeightHiddenOutput, OUTPUTNEURONS, HIDDENNEURONS);
-            ;
-            CumHiddenBias += arma::vec(otherHiddenBias, HIDDENNEURONS);
-            ;
-            CumOutputBias += arma::vec(otherOutputBias, OUTPUTNEURONS);
-            ;
+            CumWeightInputHidden += arma::fmat(otherWeightInputHidden, HIDDENNEURONS, INPUTNEURONS);
+            CumWeightHiddenOutput += arma::fmat(otherWeightHiddenOutput, OUTPUTNEURONS, HIDDENNEURONS);
+            CumHiddenBias += arma::fvec(otherHiddenBias, HIDDENNEURONS);
+            CumOutputBias += arma::fvec(otherOutputBias, OUTPUTNEURONS);
         }
 
         // TAKE AVERAGE
@@ -162,15 +154,20 @@ void IsingParallelNN()
     // TEST NETWORK ACCURACY ON DATASET
     //----------------------------------------------------------------------------
     bsp_sync();
+    std::cout << "Training time: " << bsp_time() - time0 << "\n";
+
+    // auto t2 = std::chrono::high_resolution_clock::now();
 
     if(pid == pid) {
 
         std::cout << "This is core " << pid << std::endl
                   << "Test data accuracy after training: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
-
+        //                  << "Training took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 -
+        //                  t1).count()
+        //                  << " milliseconds." << std::endl;
         bsp_sync();
     }
-//    network.saveNetwork(pid, ".");
+    network.saveNetwork(pid, ".");
     bsp_sync();
     bsp_end();
 }
@@ -185,26 +182,54 @@ int main(int argc, char* argv[])
     bsp_init(IsingParallelNN, argc, argv);
 
     n_cores = bsp_nprocs();
+    // n_cores = 1;
 
-    //    // load data sets
-    //    //----------------------------------------------------------------------------
+    std::cout << std::endl
+              << " Neural network structure: " << std::endl
+              << "==========================================================================" << std::endl
+              << " LR: " << LEARNINGRATE << ", Number of Epochs: " << NUMEPOCH << ", Batch size: " << BATCHSIZE
+              << std::endl
+              << " " << INPUTNEURONS << " Input Neurons, " << HIDDENNEURONS << " Hidden Neurons, " << OUTPUTNEURONS
+              << " Output Neurons" << std::endl
+              << "==========================================================================" << std::endl
+              << std::endl;
+
+    // SEQUENTIAL VERSION, COMMENT OUT OTHER LINES CORRESPONDINGLY IF THIS VERSION IS USED
+    //----------------------------------------------------------------------------
     //    IsingDataLoader training;
     //    IsingDataLoader validation;
     //    IsingDataLoader test;
     //
-    //    test.loadData(15,1,4, "dataList/testData.txt");
-    //    training.loadData(16,3,4, "dataList/trainingData.txt");
-    //    validation.loadData(16,2,4, "dataList/validationData.txt");
+    //    test.loadData(TOTTEST, 0, 1, "dataList/testData.txt");
+    //    training.loadData(TOTTRAIN, 0, 1, "dataList/trainingData.txt");
+    //    validation.loadData(TOTVAL, 0, 1, "dataList/validationData.txt");
     //
     //    // initialize network and trainer
     //    //----------------------------------------------------------------------------
     //
-    //    ShallowNetwork network(2500, 100, 2);
+    //    ShallowNetwork network(INPUTNEURONS, HIDDENNEURONS, OUTPUTNEURONS);
     //
-    //    NetworkTrainer trainer(&network, 0.01, 5, 100, true);
-    //  trainer.trainNetwork(training.getDataSet(), validation.getDataSet());
-    ////
-    ////    std::cout << "Test data accuracy: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
+    //    NetworkTrainer trainer(&network, LEARNINGRATE, NUMEPOCH, BATCHSIZE, USEVALIDATION);
+    //
+    //    // arma::field< arma::field<arma::fvec> > * p = training.getDataSet();
+    //
+    //    // train the network
+    //    //----------------------------------------------------------------------------
+    //    auto t1 = std::chrono::high_resolution_clock::now();
+    //
+    //    trainer.trainNetwork(0, NUMEPOCH, training.getDataSet(), validation.getDataSet());
+    //
+    //    auto t2 = std::chrono::high_resolution_clock::now();
+    //
+    //    std::cout << "Training took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+    //              << " milliseconds.\n";
+    //
+    //    // network.saveNetwork("data");
+    //
+    //    // test network accuracy
+    //    //----------------------------------------------------------------------------
+    //    std::cout << "Test data accuracy: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
+
     IsingParallelNN();
 
     return 0;
