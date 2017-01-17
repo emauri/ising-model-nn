@@ -7,6 +7,8 @@
 
 int main(int argc, const char * argv[]) {
 
+  //openblas_set_num_threads(4);
+
   //load data sets
   //----------------------------------------------------------------------------
   IsingDataLoader training;
@@ -21,7 +23,7 @@ int main(int argc, const char * argv[]) {
   //----------------------------------------------------------------------------
   ShallowNetwork network(2500, 100, 2);
 
-  NetworkTrainer trainer(&network, 0.01, 10, 10, 0.5, true);
+  NetworkTrainer trainer(&network, 0.01, 20, 33000, 0.5, true);
 
   //Test data accuracy before training
   //----------------------------------------------------------------------------
@@ -34,8 +36,8 @@ int main(int argc, const char * argv[]) {
   //----------------------------------------------------------------------------
   auto t1 = std::chrono::high_resolution_clock::now();
 
-    trainer.trainNetwork( training.getDataSet(), test.getDataSet());
-    
+    trainer.trainNetwork( training.getDataSet(), validation.getDataSet());
+
   auto t2 = std::chrono::high_resolution_clock::now();
    std::cout << "Training took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count() << " milliseconds.\n";
 
@@ -44,7 +46,7 @@ int main(int argc, const char * argv[]) {
 
   //test network accuracy
   //----------------------------------------------------------------------------
-  std::cout << "Test data accuracy: " << network.getAccuracyOfSet( validation.getDataSet() ) << std::endl;
+  std::cout << "Test data accuracy: " << network.getAccuracyOfSet( test.getDataSet() ) << std::endl;
 
   return 0;
 }
