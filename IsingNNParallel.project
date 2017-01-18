@@ -21,12 +21,16 @@
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
-      <Compiler Options="-std=c++11;-O3; -llapack; -lopenblas" C_Options="" Assembler="">
-        <IncludePath Value="."/>
+      <Compiler Options="-std=c++11;-O3;" C_Options="" Assembler="">
+        <IncludePath Value="/home/robert/Downloads/OpenBLAS-0.2.19/"/>
       </Compiler>
-      <Linker Options="-pthread -lrt -lm">
+      <Linker Options="-pthread -lrt -lm -static -static-libgcc -static-libstdc++ -lpthread -llapack -lopenblas">
         <LibraryPath Value="/home/robert/MulticoreBSP-for-C/lib/"/>
+        <LibraryPath Value="/usr/lib"/>
+        <LibraryPath Value="/usr/local/lib"/>
+        <LibraryPath Value="/home/robert/Downloads/armadillo-7.600.2"/>
         <Library Value="libmcbsp1.2.0.a"/>
+        <Library Value="libopenblas.a"/>
       </Linker>
       <ResourceCompiler Options=""/>
     </GlobalSettings>

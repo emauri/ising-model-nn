@@ -61,21 +61,23 @@ void IsingDataLoader::loadData(uint32_t numberOfFiles, uint32_t CurrentCore, uin
                 allLoaded = false;
             }
         }
-        if(std::getline(myfile, filename)) {
-            std::cout << "Warning: loaded less configurations than available." << std::endl;
-            allLoaded = false;
-        }
+        // SCREEN OUTPUT FOR DEBUGGING PURPOSE
+        //        if(std::getline(myfile, filename)) {
+        //            std::cout << "Warning: loaded less configurations than available." << std::endl;
+        //            allLoaded = false;
+        //        }
         myfile.close();
-    } else {
-        std::cout << "Couldn't open the file." << std::endl;
-        allLoaded = false;
     }
+    //    else {
+    //        std::cout << "Couldn't open the file." << std::endl;
+    //        allLoaded = false;
+    //    }
 
-    if(allLoaded) {
-        std::cout << "Set properly loaded." << std::endl;
-    } else {
-        std::cout << "Unable to properly load the data set." << std::endl;
-    }
+    //    if(allLoaded) {
+    //        std::cout << "Set properly loaded." << std::endl;
+    //    } else {
+    //        std::cout << "Unable to properly load the data set." << std::endl;
+    //    }
 }
 
 bool IsingDataLoader::saveDataSet(const char* fileName)
@@ -88,9 +90,9 @@ bool IsingDataLoader::saveDataSet(const char* fileName)
 void IsingDataLoader::loadData(const char* fileName)
 {
     bool loaded = set.load(fileName);
-    if(loaded) {
-        std::cout << "Set properly loaded." << std::endl;
-    } else {
-        std::cout << "Unable to load the data set." << std::endl;
-    }
+    //    if(loaded) {
+    //        std::cout << "Set properly loaded." << std::endl;
+    //    } else {
+    //        std::cout << "Unable to load the data set." << std::endl;
+    //    }
 }

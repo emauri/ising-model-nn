@@ -1,0 +1,334 @@
+
+ Running on 4 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+srun: Job step creation temporarily disabled, retrying
+Test data accuracy (%) before training: 50
+Training time (secs): 854.791
+Test data accuracy (%) after training: 97
+srun: Job step created
+
+ Running on 24 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 156.18
+Test data accuracy (%) after training: 95.4
+srun: Job step created
+
+ Running on 22 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 173.781
+Test data accuracy (%) after training: 97.08
+srun: Job step created
+
+ Running on 19 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 195.695
+Test data accuracy (%) after training: 97.4
+srun: Job step created
+
+ Running on 13 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 40.16
+Training time (secs): 280.109
+Test data accuracy (%) after training: 96.32
+srun: Job step created
+
+ Running on 9 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 62.92
+Training time (secs): 389.419
+Test data accuracy (%) after training: 97.78
+srun: Job step created
+
+ Running on 14 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50.54
+Training time (secs): 258.118
+Test data accuracy (%) after training: 97.82
+srun: Job step created
+
+ Running on 18 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 69.88
+Training time (secs): 207.579
+Test data accuracy (%) after training: 97.8
+srun: Job step created
+
+ Running on 8 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 449.548
+Test data accuracy (%) after training: 97.04
+srun: Job step created
+
+ Running on 5 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 701.892
+Test data accuracy (%) after training: 97.58
+srun: Job step created
+
+ Running on 12 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 303.181
+Test data accuracy (%) after training: 94.32
+srun: Job step created
+
+ Running on 7 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 500.844
+Test data accuracy (%) after training: 97.56
+srun: Job step created
+
+ Running on 17 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 218.861
+Test data accuracy (%) after training: 97.04
+srun: Job step created
+
+ Running on 1 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 2981.8
+Test data accuracy (%) after training: 95.98
+srun: Job step created
+
+ Running on 6 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 662.624
+Test data accuracy (%) after training: 96.8
+srun: Job step created
+
+ Running on 20 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 67
+Training time (secs): 188.598
+Test data accuracy (%) after training: 97.84
+srun: Job step created
+
+ Running on 16 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 59.52
+Training time (secs): 233.796
+Test data accuracy (%) after training: 97.92
+srun: Job step created
+
+ Running on 15 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 51
+Training time (secs): 241.904
+Test data accuracy (%) after training: 97.62
+srun: Job step created
+
+ Running on 23 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 170.911
+Test data accuracy (%) after training: 97.76
+srun: Job step created
+
+ Running on 2 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 1779.86
+Test data accuracy (%) after training: 95.36
+srun: Job step created
+
+ Running on 3 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 1076.4
+Test data accuracy (%) after training: 96.54
+srun: Job step created
+
+ Running on 10 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 377.05
+Test data accuracy (%) after training: 97.38
+srun: Job step created
+
+ Running on 21 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 172.134
+Test data accuracy (%) after training: 96
+srun: Job step created
+
+ Running on 11 processor(s) for following Neural Network: 
+==========================================================================
+ Learn_Rate: 0.01, Num_of_Epochs: 20, Batch_size: 100
+ Regularizer_term: 50, Use_minibatch: No
+ 2500 Input Neurons, 100 Hidden Neurons, 2 Output Neurons
+ Training size: 33000, Validation size: 5000, Test size: 5000
+==========================================================================
+
+Test data accuracy (%) before training: 50
+Training time (secs): 322.07
+Test data accuracy (%) after training: 97.72

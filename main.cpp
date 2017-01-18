@@ -1,16 +1,19 @@
 /****************************************************************************************
 Using LAPACK and OpenBLAS packages on Armadillo
 Armadillo package version 7.600.2 installed via website: http://arma.sourceforge.net
-LAPACK-dev and OpenBLAS-dev package installed via apt-get
+LAPACK-dev and OpenBLAS-dev packages installed via apt-get
 
 Inside file ¨config.hpp¨ in /usr/local/include/armadillo_bits:
 1. Uncomment line #define ARMA_USE_LAPACK
-2. Comment out line #define ARMA_USE_WRAPPER
+2. Uncomment line #define ARMA_USE_BLAS
+3. Comment out line #define ARMA_USE_WRAPPER
+4. Comment out line #define ARMA_NO_DEBUG
 
-Compiler option: -std=c++11;-O3; -llapack; -lopenblas
-Linker option: -pthread -lrt -lm
-Library path: /home/robert/MulticoreBSP-for-C/lib/
-Libraries: libmcbsp1.2.0.a
+Compiler option: -std=c++11;-O3
+Additional Include paths: /home/robert/Downloads/OpenBLAS-0.2.19/
+Linker option: -static -static-libgcc -static-libstdc++ -lpthread -llapack -lopenblas
+Library path: /home/robert/MulticoreBSP-for-C/lib/;/usr/lib;/usr/local/lib;/home/robert/Downloads/armadillo-7.600.2
+Libraries: libmcbsp1.2.0.a; libopenblas.a
 *****************************************************************************************/
 
 #include "mcbsp.hpp"
@@ -29,6 +32,8 @@ Libraries: libmcbsp1.2.0.a
 #include "IsingDataLoader.h"
 #include "NetworkTrainer.h"
 
+#include "cblas.h"
+
 using namespace arma;
 
 #define SIZEF (sizeof(float))
@@ -43,9 +48,16 @@ using namespace arma;
 #define LEARNINGRATE 0.01
 #define NUMEPOCH 20
 #define BATCHSIZE 100
+#define REGTERM 50
 #define USEVALIDATION true
+#define USEMINIBATCH false
 
-unsigned int n_cores, n_queries;
+unsigned int n_cores;
+std::string useminibatch = "No";
+
+extern "C" {
+#include "mcbsp-affinity.h"
+}
 
 void IsingParallelNN()
 {
@@ -90,20 +102,15 @@ void IsingParallelNN()
     bsp_get(0, localWeightHiddenOutput, 0, localWeightHiddenOutput, OUTPUTNEURONS * HIDDENNEURONS * SIZEF);
     bsp_get(0, localHiddenBias, 0, localHiddenBias, HIDDENNEURONS * SIZEF);
     bsp_get(0, localOutputBias, 0, localOutputBias, OUTPUTNEURONS * SIZEF);
-    bsp_sync();
 
-    // SET WEIGHTS AND BIASES ON EACH CORE TO THE SAME VALUE AS ONES ON PROCESSOR 0
-
-    if(pid == pid) {
-
-        std::cout << "This is core " << pid << std::endl
-                  << "Test data accuracy before training: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
-        bsp_sync();
+    if(pid == 0) {
+        std::cout << "Test data accuracy (%) before training: " << network.getAccuracyOfSet(test.getDataSet())
+                  << std::endl;
     }
 
-    double time0 = bsp_time();
+    bsp_sync();
 
-    // auto t1 = std::chrono::high_resolution_clock::now();
+    double time0 = bsp_time();
 
     NetworkTrainer trainer(&network, LEARNINGRATE, 1, BATCHSIZE, USEVALIDATION);
 
@@ -154,20 +161,16 @@ void IsingParallelNN()
     // TEST NETWORK ACCURACY ON DATASET
     //----------------------------------------------------------------------------
     bsp_sync();
-    std::cout << "Training time: " << bsp_time() - time0 << "\n";
 
-    // auto t2 = std::chrono::high_resolution_clock::now();
+    if(pid == 0) {
 
-    if(pid == pid) {
+        std::cout << "Training time (secs): " << bsp_time() - time0 << std::endl;
 
-        std::cout << "This is core " << pid << std::endl
-                  << "Test data accuracy after training: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
-        //                  << "Training took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 -
-        //                  t1).count()
-        //                  << " milliseconds." << std::endl;
-        bsp_sync();
+        std::cout << "Test data accuracy (%) after training: " << network.getAccuracyOfSet(test.getDataSet())
+                  << std::endl;
     }
-    network.saveNetwork(pid, ".");
+    // SAVE NETWORK CONFIGURATION FOR DEBUGGING PURPOSE
+    // network.saveNetwork(pid, ".");
     bsp_sync();
     bsp_end();
 }
@@ -180,55 +183,33 @@ void IsingParallelNN()
 int main(int argc, char* argv[])
 {
     bsp_init(IsingParallelNN, argc, argv);
+    mcbsp_set_affinity_mode(COMPACT);
 
-    n_cores = bsp_nprocs();
-    // n_cores = 1;
+    // n_cores = bsp_nprocs();
+
+    n_cores = atoi(argv[1]);
+
+    // SET SINGLE THREAD OPENBLAS BECAUSE HIGHER THREADS DON'T HAVE AFFECT WITHIN BSP FUCTION
+    openblas_set_num_threads(1);
+
+    if(USEMINIBATCH) {
+        std::string useminibatch = "Yes";
+    } else {
+        std::string useminibatch = "No";
+    }
 
     std::cout << std::endl
-              << " Neural network structure: " << std::endl
+              << " Running on " << n_cores << " processor(s) for following Neural Network: " << std::endl
               << "==========================================================================" << std::endl
-              << " LR: " << LEARNINGRATE << ", Number of Epochs: " << NUMEPOCH << ", Batch size: " << BATCHSIZE
+              << " Learn_Rate: " << LEARNINGRATE << ", Num_of_Epochs: " << NUMEPOCH << ", Batch_size: " << BATCHSIZE
               << std::endl
+              << " Regularizer_term: " << REGTERM << ", Use_minibatch: " << useminibatch << std::endl
               << " " << INPUTNEURONS << " Input Neurons, " << HIDDENNEURONS << " Hidden Neurons, " << OUTPUTNEURONS
               << " Output Neurons" << std::endl
+              << " Training size: " << TOTTRAIN << ", Validation size: " << TOTVAL << ", Test size: " << TOTTEST
+              << std::endl
               << "==========================================================================" << std::endl
               << std::endl;
-
-    // SEQUENTIAL VERSION, COMMENT OUT OTHER LINES CORRESPONDINGLY IF THIS VERSION IS USED
-    //----------------------------------------------------------------------------
-    //    IsingDataLoader training;
-    //    IsingDataLoader validation;
-    //    IsingDataLoader test;
-    //
-    //    test.loadData(TOTTEST, 0, 1, "dataList/testData.txt");
-    //    training.loadData(TOTTRAIN, 0, 1, "dataList/trainingData.txt");
-    //    validation.loadData(TOTVAL, 0, 1, "dataList/validationData.txt");
-    //
-    //    // initialize network and trainer
-    //    //----------------------------------------------------------------------------
-    //
-    //    ShallowNetwork network(INPUTNEURONS, HIDDENNEURONS, OUTPUTNEURONS);
-    //
-    //    NetworkTrainer trainer(&network, LEARNINGRATE, NUMEPOCH, BATCHSIZE, USEVALIDATION);
-    //
-    //    // arma::field< arma::field<arma::fvec> > * p = training.getDataSet();
-    //
-    //    // train the network
-    //    //----------------------------------------------------------------------------
-    //    auto t1 = std::chrono::high_resolution_clock::now();
-    //
-    //    trainer.trainNetwork(0, NUMEPOCH, training.getDataSet(), validation.getDataSet());
-    //
-    //    auto t2 = std::chrono::high_resolution_clock::now();
-    //
-    //    std::cout << "Training took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-    //              << " milliseconds.\n";
-    //
-    //    // network.saveNetwork("data");
-    //
-    //    // test network accuracy
-    //    //----------------------------------------------------------------------------
-    //    std::cout << "Test data accuracy: " << network.getAccuracyOfSet(test.getDataSet()) << std::endl;
 
     IsingParallelNN();
 

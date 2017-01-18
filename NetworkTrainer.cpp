@@ -141,9 +141,9 @@ void NetworkTrainer::trainNetwork(uint32_t currentEpoch,
 
     // initialize shuffleData
     uint32_t trainingSize = trainingSet->n_elem;
-    
+
     batchSize = trainingSize;
-    
+
     shuffleData.set_size(trainingSize);
     for(uint32_t i = 0; i < trainingSize; ++i) {
         shuffleData(i) = i;
@@ -153,23 +153,27 @@ void NetworkTrainer::trainNetwork(uint32_t currentEpoch,
         stochasticGradientDescent(trainingSet, trainingSize);
 
         // store training accuracy for the epoch
-        trainingAccuracy(i) = 100 - (incorrectResults / trainingSize * 100);
 
-        if(useValidation && validationSet != NULL) {
-            validationAccuracy(i) = network->getAccuracyOfSet(validationSet);
-
-            validationCost(i) = monitorCost(validationSet);
-        }
-
-        // print accuracy for the epoch
-        std::cout << "==========================================================================" << std::endl
-                  << "Epoch: " << currentEpoch + 1 << " of " << totalEpochs << std::endl
-                  << "Training set accuracy: " << trainingAccuracy(i) << std::endl;
-        if(useValidation && validationSet != NULL) {
-            std::cout << "Validation set accuracy: " << validationAccuracy(i) << " Total cost: " << validationCost(i)
-                      << std::endl;
-        }
-        std::cout << "==========================================================================" << std::endl;
+        // FOR TRACKING AND DEBUG PURPOSE:
+        //        trainingAccuracy(i) = 100 - (incorrectResults / trainingSize * 100);
+        //
+        //        if(useValidation && validationSet != NULL) {
+        //            validationAccuracy(i) = network->getAccuracyOfSet(validationSet);
+        //
+        //            validationCost(i) = monitorCost(validationSet);
+        //        }
+        //
+        //        // print accuracy for the epoch
+        //        std::cout << "==========================================================================" << std::endl
+        //                  << "Epoch: " << currentEpoch + 1 << " of " << totalEpochs << std::endl
+        //                  << "Training set accuracy: " << trainingAccuracy(i) << std::endl;
+        //        if(useValidation && validationSet != NULL) {
+        //            std::cout << "Validation set accuracy: " << validationAccuracy(i) << " Total cost: " <<
+        //            validationCost(i)
+        //                      << std::endl;
+        //        }
+        //        std::cout << "==========================================================================" <<
+        //        std::endl;
     }
 }
 

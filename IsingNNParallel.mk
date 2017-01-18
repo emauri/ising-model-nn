@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=Robert
-Date                   :=16/01/17
+Date                   :=18/01/17
 CodeLitePath           :=/home/robert/.codelite
 LinkerName             :=/usr/bin/g++
 SharedObjectLinkerName :=/usr/bin/g++ -shared -fPIC
@@ -35,13 +35,13 @@ PreprocessOnlySwitch   :=-E
 ObjectsFileList        :="IsingNNParallel.txt"
 PCHCompileFlags        :=
 MakeDirCommand         :=mkdir -p
-LinkOptions            := -pthread -lrt -lm 
-IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). 
+LinkOptions            := -pthread -lrt -lm -static -static-libgcc -static-libstdc++ -lpthread -llapack -lopenblas 
+IncludePath            :=  $(IncludeSwitch)/home/robert/Downloads/OpenBLAS-0.2.19/ $(IncludeSwitch). 
 IncludePCH             := 
 RcIncludePath          := 
-Libs                   := $(LibrarySwitch)mcbsp1.2.0 
-ArLibs                 :=  "libmcbsp1.2.0.a" 
-LibPath                := $(LibraryPathSwitch)/home/robert/MulticoreBSP-for-C/lib/ 
+Libs                   := $(LibrarySwitch)mcbsp1.2.0 $(LibrarySwitch)openblas 
+ArLibs                 :=  "libmcbsp1.2.0.a" "libopenblas.a" 
+LibPath                := $(LibraryPathSwitch)/home/robert/MulticoreBSP-for-C/lib/ $(LibraryPathSwitch)/usr/lib $(LibraryPathSwitch)/usr/local/lib $(LibraryPathSwitch)/home/robert/Downloads/armadillo-7.600.2 
 
 ##
 ## Common variables
@@ -50,7 +50,7 @@ LibPath                := $(LibraryPathSwitch)/home/robert/MulticoreBSP-for-C/li
 AR       := /usr/bin/ar rcu
 CXX      := /usr/bin/g++
 CC       := /usr/bin/gcc
-CXXFLAGS := -std=c++11 -O3  -llapack  -lopenblas -g -O0 -Wall $(Preprocessors)
+CXXFLAGS := -std=c++11 -O3  -g -O0 -Wall $(Preprocessors)
 CFLAGS   :=  -g -O0 -Wall $(Preprocessors)
 ASFLAGS  := 
 AS       := /usr/bin/as
