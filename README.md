@@ -6,5 +6,5 @@ The zip file *data.zip* contains 4 directories:
   * *validation*, containing the data files for validation
   * *test*, containing the data files for testing
 
-A makefile is provided to compile the algorithm. Currently it is set to use Mac OsX *-framework Accelerate*, that provides a multithreading implementation of BLAS.
+A makefile is provided to compile the program. Currently it is set to use Mac OsX *-framework Accelerate*, that provides a multithreading implementation of BLAS.
 To run the program on Linux with the multithreaded *openBlas* library installed, uncomment the makefile lines linking to the *openBlas* library, you may also need to chabge the path to match the one on your machine.
