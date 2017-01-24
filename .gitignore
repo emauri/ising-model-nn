@@ -23,3 +23,7 @@ test*
 
 #Ignore wolff.cpp
 wolff.cpp
+
+#unignore data zip file
+!data.zip
+

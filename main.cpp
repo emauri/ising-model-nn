@@ -23,25 +23,28 @@ int main(int argc, const char * argv[]) {
   //----------------------------------------------------------------------------
   ShallowNetwork network(2500, 100, 2);
 
-  NetworkTrainer trainer(&network, 0.01, 20, 33000, 0.5, true);
+  NetworkTrainer trainer(&network, 0.01, 20, 10, 2, true);
 
   //Test data accuracy before training
   //----------------------------------------------------------------------------
   std::cout << std::endl;
   std::cout << "Test data accuracy: " << network.getAccuracyOfSet( test.getDataSet() ) << std::endl;
 
-  //arma::field< arma::field<arma::vec> > * p = training.getDataSet();
-
   //train the network
   //----------------------------------------------------------------------------
+
+  //measure training time
   auto t1 = std::chrono::high_resolution_clock::now();
 
-    trainer.trainNetwork( training.getDataSet(), validation.getDataSet());
+  //training
+  trainer.trainNetwork( training.getDataSet(), validation.getDataSet());
 
   auto t2 = std::chrono::high_resolution_clock::now();
-   std::cout << "Training took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count() << " milliseconds.\n";
 
+  //print training time
+   std::cout << "Training took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()/1000 << " seconds.\n";
 
+  //save network weights and biases
   network.saveNetwork("data");
 
   //test network accuracy
