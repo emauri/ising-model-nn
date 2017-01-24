@@ -17,7 +17,7 @@ int main(int argc, const char * argv[]) {
 
   if ( !test.loadData(5000, "dataList/testData.txt") ) { return -1; };
   if( !training.loadData(33000, "dataList/trainingData.txt") ) { return -1; }
-  if( !validation.loadData(5000, "dataList/validationData.txt") ) { return -1; };
+  if( !validation.loadData(5000, "dataList/validationData.txt") ) { return -1; }
 
   //initialize network and trainer
   //----------------------------------------------------------------------------
@@ -42,7 +42,7 @@ int main(int argc, const char * argv[]) {
   auto t2 = std::chrono::high_resolution_clock::now();
 
   //print training time
-   std::cout << "Training took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()/1000 << " seconds.\n";
+  std::cout << "Training took " << std::chrono::duration_cast<std::chrono::milliseconds>(t2-t1).count()/1000 << " seconds.\n";
 
   //save network weights and biases
   network.saveNetwork("data");
